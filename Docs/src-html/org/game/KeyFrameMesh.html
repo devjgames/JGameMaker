@@ -1,0 +1,438 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css" title="Style">
+</head>
+<body>
+<main role="main">
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span><a id="line.1">package org.game;</a>
+<span class="sourceLineNo">002</span><a id="line.2"></a>
+<span class="sourceLineNo">003</span><a id="line.3">import java.io.File;</a>
+<span class="sourceLineNo">004</span><a id="line.4">import java.io.IOException;</a>
+<span class="sourceLineNo">005</span><a id="line.5">import java.util.Vector;</a>
+<span class="sourceLineNo">006</span><a id="line.6"></a>
+<span class="sourceLineNo">007</span><a id="line.7">import org.game.MD2.Frame;</a>
+<span class="sourceLineNo">008</span><a id="line.8">import org.game.MD2.Header;</a>
+<span class="sourceLineNo">009</span><a id="line.9">import org.game.MD2.TextureCoordinate;</a>
+<span class="sourceLineNo">010</span><a id="line.10">import org.game.MD2.TriangleIndices;</a>
+<span class="sourceLineNo">011</span><a id="line.11">import org.game.MD2.TriangleVertex;</a>
+<span class="sourceLineNo">012</span><a id="line.12"></a>
+<span class="sourceLineNo">013</span><a id="line.13">public final class KeyFrameMesh implements Renderable {</a>
+<span class="sourceLineNo">014</span><a id="line.14"></a>
+<span class="sourceLineNo">015</span><a id="line.15">    static class KeyFrameMeshLoader implements AssetLoader {</a>
+<span class="sourceLineNo">016</span><a id="line.16"></a>
+<span class="sourceLineNo">017</span><a id="line.17">        @Override</a>
+<span class="sourceLineNo">018</span><a id="line.18">        public Object load(File file, AssetManager assets) throws Exception {</a>
+<span class="sourceLineNo">019</span><a id="line.19">            String[] lines = new String(IO.readAllBytes(file)).split("\\n+");</a>
+<span class="sourceLineNo">020</span><a id="line.20">            File meshFile = null;</a>
+<span class="sourceLineNo">021</span><a id="line.21">            File directory = file.getParentFile();</a>
+<span class="sourceLineNo">022</span><a id="line.22">            File textureFile = null;</a>
+<span class="sourceLineNo">023</span><a id="line.23"></a>
+<span class="sourceLineNo">024</span><a id="line.24">            for(String line : lines) {</a>
+<span class="sourceLineNo">025</span><a id="line.25">                String tLine = line.trim();</a>
+<span class="sourceLineNo">026</span><a id="line.26"></a>
+<span class="sourceLineNo">027</span><a id="line.27">                if(tLine.startsWith("texture ")) {</a>
+<span class="sourceLineNo">028</span><a id="line.28">                    textureFile = IO.file(tLine.substring(7).trim());</a>
+<span class="sourceLineNo">029</span><a id="line.29">                } else if(tLine.startsWith("mesh ")) {</a>
+<span class="sourceLineNo">030</span><a id="line.30">                    meshFile = IO.file(directory, tLine.substring(4).trim());</a>
+<span class="sourceLineNo">031</span><a id="line.31">                }</a>
+<span class="sourceLineNo">032</span><a id="line.32">            }</a>
+<span class="sourceLineNo">033</span><a id="line.33"></a>
+<span class="sourceLineNo">034</span><a id="line.34">            KeyFrameMesh mesh = new KeyFrameMesh(meshFile, file, textureFile);</a>
+<span class="sourceLineNo">035</span><a id="line.35"></a>
+<span class="sourceLineNo">036</span><a id="line.36">            return mesh;</a>
+<span class="sourceLineNo">037</span><a id="line.37">        }</a>
+<span class="sourceLineNo">038</span><a id="line.38">        </a>
+<span class="sourceLineNo">039</span><a id="line.39">    }</a>
+<span class="sourceLineNo">040</span><a id="line.40"></a>
+<span class="sourceLineNo">041</span><a id="line.41">    private Texture texture = null;</a>
+<span class="sourceLineNo">042</span><a id="line.42">    private Texture decal = null;</a>
+<span class="sourceLineNo">043</span><a id="line.43">    private final File file;</a>
+<span class="sourceLineNo">044</span><a id="line.44">    private final AABB bounds = new AABB();</a>
+<span class="sourceLineNo">045</span><a id="line.45">    private final AABB tBounds = new AABB();</a>
+<span class="sourceLineNo">046</span><a id="line.46">    private final Header header;</a>
+<span class="sourceLineNo">047</span><a id="line.47">    private final TextureCoordinate[] textureCoordinates;</a>
+<span class="sourceLineNo">048</span><a id="line.48">    private final TriangleIndices[] triangles;</a>
+<span class="sourceLineNo">049</span><a id="line.49">    private final Frame[] frames;</a>
+<span class="sourceLineNo">050</span><a id="line.50">    private int start = 0;</a>
+<span class="sourceLineNo">051</span><a id="line.51">    private int end = 0;</a>
+<span class="sourceLineNo">052</span><a id="line.52">    private int speed = 0;</a>
+<span class="sourceLineNo">053</span><a id="line.53">    private boolean looping = false;</a>
+<span class="sourceLineNo">054</span><a id="line.54">    private int frame = 0;</a>
+<span class="sourceLineNo">055</span><a id="line.55">    private float amount = 0;</a>
+<span class="sourceLineNo">056</span><a id="line.56">    private boolean done = true;</a>
+<span class="sourceLineNo">057</span><a id="line.57">    private final Vertex vertex = new Vertex();</a>
+<span class="sourceLineNo">058</span><a id="line.58">    private final float[][] normals;</a>
+<span class="sourceLineNo">059</span><a id="line.59"></a>
+<span class="sourceLineNo">060</span><a id="line.60">    KeyFrameMesh(File file, File kfmFile, File textureFile) throws IOException {</a>
+<span class="sourceLineNo">061</span><a id="line.61">        BinReader reader = new BinReader(IO.readAllBytes(file));</a>
+<span class="sourceLineNo">062</span><a id="line.62"></a>
+<span class="sourceLineNo">063</span><a id="line.63">        this.file = IO.file(kfmFile.getName());</a>
+<span class="sourceLineNo">064</span><a id="line.64"></a>
+<span class="sourceLineNo">065</span><a id="line.65">        File decalFile = IO.file(AssetManager.getRoot(), IO.getFilenameWithoutExtension(textureFile) + "_DECAL.png");</a>
+<span class="sourceLineNo">066</span><a id="line.66"></a>
+<span class="sourceLineNo">067</span><a id="line.67">        if(decalFile.exists()) {</a>
+<span class="sourceLineNo">068</span><a id="line.68">            try {</a>
+<span class="sourceLineNo">069</span><a id="line.69">                decal = Game.getInstance().getAssets().load(IO.file(decalFile.getName()));</a>
+<span class="sourceLineNo">070</span><a id="line.70">            } catch(Exception ex) {</a>
+<span class="sourceLineNo">071</span><a id="line.71">                Log.put(0, ex);</a>
+<span class="sourceLineNo">072</span><a id="line.72">            }</a>
+<span class="sourceLineNo">073</span><a id="line.73">        }</a>
+<span class="sourceLineNo">074</span><a id="line.74"></a>
+<span class="sourceLineNo">075</span><a id="line.75">        if(textureFile != null) {</a>
+<span class="sourceLineNo">076</span><a id="line.76">            try {</a>
+<span class="sourceLineNo">077</span><a id="line.77">                texture = Game.getInstance().getAssets().load(textureFile);</a>
+<span class="sourceLineNo">078</span><a id="line.78">            } catch(Exception ex) {</a>
+<span class="sourceLineNo">079</span><a id="line.79">                Log.put(0, ex);</a>
+<span class="sourceLineNo">080</span><a id="line.80">            }</a>
+<span class="sourceLineNo">081</span><a id="line.81">        }</a>
+<span class="sourceLineNo">082</span><a id="line.82"></a>
+<span class="sourceLineNo">083</span><a id="line.83">        header = new Header(reader);</a>
+<span class="sourceLineNo">084</span><a id="line.84">        reader.setPosition(header.offST);</a>
+<span class="sourceLineNo">085</span><a id="line.85">        textureCoordinates = new TextureCoordinate[header.numST];</a>
+<span class="sourceLineNo">086</span><a id="line.86">        for(int i = 0; i != header.numST; i++) {</a>
+<span class="sourceLineNo">087</span><a id="line.87">            textureCoordinates[i] = new TextureCoordinate(reader);</a>
+<span class="sourceLineNo">088</span><a id="line.88">        }</a>
+<span class="sourceLineNo">089</span><a id="line.89">        reader.setPosition(header.offTris);</a>
+<span class="sourceLineNo">090</span><a id="line.90">        triangles = new TriangleIndices[header.numTris];</a>
+<span class="sourceLineNo">091</span><a id="line.91">        for(int i = 0; i != header. numTris; i++) {</a>
+<span class="sourceLineNo">092</span><a id="line.92">            triangles[i] = new TriangleIndices(reader);</a>
+<span class="sourceLineNo">093</span><a id="line.93">        }</a>
+<span class="sourceLineNo">094</span><a id="line.94">        frames = new Frame[header.numFrames];</a>
+<span class="sourceLineNo">095</span><a id="line.95">        for(int i = 0; i != header.numFrames; i++) {</a>
+<span class="sourceLineNo">096</span><a id="line.96">            reader.setPosition(header.offFrames + header.frameSize * i);</a>
+<span class="sourceLineNo">097</span><a id="line.97">            frames[i] = new Frame(reader, header);</a>
+<span class="sourceLineNo">098</span><a id="line.98">        }</a>
+<span class="sourceLineNo">099</span><a id="line.99"></a>
+<span class="sourceLineNo">100</span><a id="line.100">        reset();</a>
+<span class="sourceLineNo">101</span><a id="line.101"></a>
+<span class="sourceLineNo">102</span><a id="line.102">        bounds.set(frames[0].bounds);</a>
+<span class="sourceLineNo">103</span><a id="line.103"></a>
+<span class="sourceLineNo">104</span><a id="line.104">        normals = MD2Normals.cloneNormals();</a>
+<span class="sourceLineNo">105</span><a id="line.105">    }</a>
+<span class="sourceLineNo">106</span><a id="line.106"></a>
+<span class="sourceLineNo">107</span><a id="line.107">    KeyFrameMesh(KeyFrameMesh mesh) {</a>
+<span class="sourceLineNo">108</span><a id="line.108">        this.file = mesh.file;</a>
+<span class="sourceLineNo">109</span><a id="line.109">    </a>
+<span class="sourceLineNo">110</span><a id="line.110">        header = mesh.header;</a>
+<span class="sourceLineNo">111</span><a id="line.111">        textureCoordinates = mesh.textureCoordinates;</a>
+<span class="sourceLineNo">112</span><a id="line.112">        triangles = mesh.triangles;</a>
+<span class="sourceLineNo">113</span><a id="line.113">        frames = mesh.frames;</a>
+<span class="sourceLineNo">114</span><a id="line.114"></a>
+<span class="sourceLineNo">115</span><a id="line.115">        if(mesh.texture != null) {</a>
+<span class="sourceLineNo">116</span><a id="line.116">            try {</a>
+<span class="sourceLineNo">117</span><a id="line.117">                texture = mesh.texture.newInstance();</a>
+<span class="sourceLineNo">118</span><a id="line.118">            } catch(Exception ex) {</a>
+<span class="sourceLineNo">119</span><a id="line.119">                Log.put(0, ex);</a>
+<span class="sourceLineNo">120</span><a id="line.120">            }</a>
+<span class="sourceLineNo">121</span><a id="line.121">        }</a>
+<span class="sourceLineNo">122</span><a id="line.122"></a>
+<span class="sourceLineNo">123</span><a id="line.123">        if(mesh.decal != null) {</a>
+<span class="sourceLineNo">124</span><a id="line.124">            try {</a>
+<span class="sourceLineNo">125</span><a id="line.125">                decal = mesh.decal.newInstance();</a>
+<span class="sourceLineNo">126</span><a id="line.126">            } catch(Exception ex) {</a>
+<span class="sourceLineNo">127</span><a id="line.127">                Log.put(0, ex);</a>
+<span class="sourceLineNo">128</span><a id="line.128">            }</a>
+<span class="sourceLineNo">129</span><a id="line.129">        }</a>
+<span class="sourceLineNo">130</span><a id="line.130">        reset();</a>
+<span class="sourceLineNo">131</span><a id="line.131"></a>
+<span class="sourceLineNo">132</span><a id="line.132">        bounds.set(frames[0].bounds);</a>
+<span class="sourceLineNo">133</span><a id="line.133"></a>
+<span class="sourceLineNo">134</span><a id="line.134">        normals = mesh.normals;</a>
+<span class="sourceLineNo">135</span><a id="line.135">    }</a>
+<span class="sourceLineNo">136</span><a id="line.136"></a>
+<span class="sourceLineNo">137</span><a id="line.137">    public boolean isDone() {</a>
+<span class="sourceLineNo">138</span><a id="line.138">        return done;</a>
+<span class="sourceLineNo">139</span><a id="line.139">    }</a>
+<span class="sourceLineNo">140</span><a id="line.140"></a>
+<span class="sourceLineNo">141</span><a id="line.141">    public boolean isLooping() {</a>
+<span class="sourceLineNo">142</span><a id="line.142">        return looping;</a>
+<span class="sourceLineNo">143</span><a id="line.143">    }</a>
+<span class="sourceLineNo">144</span><a id="line.144"></a>
+<span class="sourceLineNo">145</span><a id="line.145">    public int getStart() {</a>
+<span class="sourceLineNo">146</span><a id="line.146">        return start;</a>
+<span class="sourceLineNo">147</span><a id="line.147">    }</a>
+<span class="sourceLineNo">148</span><a id="line.148"></a>
+<span class="sourceLineNo">149</span><a id="line.149">    public int getEnd() {</a>
+<span class="sourceLineNo">150</span><a id="line.150">        return end;</a>
+<span class="sourceLineNo">151</span><a id="line.151">    }</a>
+<span class="sourceLineNo">152</span><a id="line.152"></a>
+<span class="sourceLineNo">153</span><a id="line.153">    public int getSpeed() {</a>
+<span class="sourceLineNo">154</span><a id="line.154">        return speed;</a>
+<span class="sourceLineNo">155</span><a id="line.155">    }</a>
+<span class="sourceLineNo">156</span><a id="line.156"></a>
+<span class="sourceLineNo">157</span><a id="line.157">    public int getFrame() {</a>
+<span class="sourceLineNo">158</span><a id="line.158">        return frame;</a>
+<span class="sourceLineNo">159</span><a id="line.159">    }</a>
+<span class="sourceLineNo">160</span><a id="line.160"></a>
+<span class="sourceLineNo">161</span><a id="line.161">    public void reset() {</a>
+<span class="sourceLineNo">162</span><a id="line.162">        frame = start;</a>
+<span class="sourceLineNo">163</span><a id="line.163">        amount = 0;</a>
+<span class="sourceLineNo">164</span><a id="line.164">        done = start == end;</a>
+<span class="sourceLineNo">165</span><a id="line.165">        bounds.set(frames[0].bounds);</a>
+<span class="sourceLineNo">166</span><a id="line.166">    }</a>
+<span class="sourceLineNo">167</span><a id="line.167"></a>
+<span class="sourceLineNo">168</span><a id="line.168">    public boolean isSequence(int start, int end) {</a>
+<span class="sourceLineNo">169</span><a id="line.169">        return start == this.start &amp;&amp; end == this.end;</a>
+<span class="sourceLineNo">170</span><a id="line.170">    }</a>
+<span class="sourceLineNo">171</span><a id="line.171"></a>
+<span class="sourceLineNo">172</span><a id="line.172">    public void setSequence(int start, int end, int speed, boolean looping) {</a>
+<span class="sourceLineNo">173</span><a id="line.173">        if(start &gt;= 0 &amp;&amp; start &lt; frames.length &amp;&amp; end &gt;= 0 &amp;&amp; end &lt; frames.length &amp;&amp; start &lt;= end) {</a>
+<span class="sourceLineNo">174</span><a id="line.174">            if(start != this.start || end != this.end || speed != this.speed || looping != this.looping) {</a>
+<span class="sourceLineNo">175</span><a id="line.175">                this.start = start;</a>
+<span class="sourceLineNo">176</span><a id="line.176">                this.end = end;</a>
+<span class="sourceLineNo">177</span><a id="line.177">                this.speed = speed;</a>
+<span class="sourceLineNo">178</span><a id="line.178">                this.looping = looping;</a>
+<span class="sourceLineNo">179</span><a id="line.179">                reset();</a>
+<span class="sourceLineNo">180</span><a id="line.180">            }</a>
+<span class="sourceLineNo">181</span><a id="line.181">        }</a>
+<span class="sourceLineNo">182</span><a id="line.182">    }</a>
+<span class="sourceLineNo">183</span><a id="line.183"></a>
+<span class="sourceLineNo">184</span><a id="line.184">    public int getFrameCount() {</a>
+<span class="sourceLineNo">185</span><a id="line.185">        return frames.length;</a>
+<span class="sourceLineNo">186</span><a id="line.186">    }</a>
+<span class="sourceLineNo">187</span><a id="line.187"></a>
+<span class="sourceLineNo">188</span><a id="line.188">    public AABB getFrameBounds(int i) {</a>
+<span class="sourceLineNo">189</span><a id="line.189">        return tBounds.set(frames[i].bounds);</a>
+<span class="sourceLineNo">190</span><a id="line.190">    }</a>
+<span class="sourceLineNo">191</span><a id="line.191"></a>
+<span class="sourceLineNo">192</span><a id="line.192">    public String getFrameName(int i) {</a>
+<span class="sourceLineNo">193</span><a id="line.193">        return frames[i].name;</a>
+<span class="sourceLineNo">194</span><a id="line.194">    }</a>
+<span class="sourceLineNo">195</span><a id="line.195"></a>
+<span class="sourceLineNo">196</span><a id="line.196">    Frame[] getFrames() {</a>
+<span class="sourceLineNo">197</span><a id="line.197">        return frames;</a>
+<span class="sourceLineNo">198</span><a id="line.198">    }</a>
+<span class="sourceLineNo">199</span><a id="line.199"></a>
+<span class="sourceLineNo">200</span><a id="line.200">    Header getHeader() {</a>
+<span class="sourceLineNo">201</span><a id="line.201">        return header;</a>
+<span class="sourceLineNo">202</span><a id="line.202">    }</a>
+<span class="sourceLineNo">203</span><a id="line.203"></a>
+<span class="sourceLineNo">204</span><a id="line.204">    TextureCoordinate[] getTextureCoordinates() {</a>
+<span class="sourceLineNo">205</span><a id="line.205">        return textureCoordinates;</a>
+<span class="sourceLineNo">206</span><a id="line.206">    }</a>
+<span class="sourceLineNo">207</span><a id="line.207"></a>
+<span class="sourceLineNo">208</span><a id="line.208">    TriangleIndices[] getTriangles() {</a>
+<span class="sourceLineNo">209</span><a id="line.209">        return triangles;</a>
+<span class="sourceLineNo">210</span><a id="line.210">    }</a>
+<span class="sourceLineNo">211</span><a id="line.211"></a>
+<span class="sourceLineNo">212</span><a id="line.212">    @Override</a>
+<span class="sourceLineNo">213</span><a id="line.213">    public File getFile() {</a>
+<span class="sourceLineNo">214</span><a id="line.214">        return file;</a>
+<span class="sourceLineNo">215</span><a id="line.215">    }</a>
+<span class="sourceLineNo">216</span><a id="line.216"></a>
+<span class="sourceLineNo">217</span><a id="line.217">    @Override</a>
+<span class="sourceLineNo">218</span><a id="line.218">    public AABB getBounds() {</a>
+<span class="sourceLineNo">219</span><a id="line.219">        return tBounds.set(bounds);</a>
+<span class="sourceLineNo">220</span><a id="line.220">    }</a>
+<span class="sourceLineNo">221</span><a id="line.221"></a>
+<span class="sourceLineNo">222</span><a id="line.222">    @Override</a>
+<span class="sourceLineNo">223</span><a id="line.223">    public int getTriangleCount() {</a>
+<span class="sourceLineNo">224</span><a id="line.224">        return header.numTris;</a>
+<span class="sourceLineNo">225</span><a id="line.225">    }</a>
+<span class="sourceLineNo">226</span><a id="line.226"></a>
+<span class="sourceLineNo">227</span><a id="line.227">    @Override</a>
+<span class="sourceLineNo">228</span><a id="line.228">    public Triangle getTriangle(Scene scene, SceneNode node, int i, Triangle triangle) {</a>
+<span class="sourceLineNo">229</span><a id="line.229">        int f1 = frame;</a>
+<span class="sourceLineNo">230</span><a id="line.230">        int f2 = frame + 1;</a>
+<span class="sourceLineNo">231</span><a id="line.231"></a>
+<span class="sourceLineNo">232</span><a id="line.232">        if(f1 == end) {</a>
+<span class="sourceLineNo">233</span><a id="line.233">            f2 = start;</a>
+<span class="sourceLineNo">234</span><a id="line.234">        }</a>
+<span class="sourceLineNo">235</span><a id="line.235"></a>
+<span class="sourceLineNo">236</span><a id="line.236">        TriangleVertex f1v1 = frames[f1].vertices[triangles[i].vertex[0]];</a>
+<span class="sourceLineNo">237</span><a id="line.237">        TriangleVertex f1v2 = frames[f1].vertices[triangles[i].vertex[1]];</a>
+<span class="sourceLineNo">238</span><a id="line.238">        TriangleVertex f1v3 = frames[f1].vertices[triangles[i].vertex[2]];</a>
+<span class="sourceLineNo">239</span><a id="line.239">        TriangleVertex f2v1 = frames[f2].vertices[triangles[i].vertex[0]];</a>
+<span class="sourceLineNo">240</span><a id="line.240">        TriangleVertex f2v2 = frames[f2].vertices[triangles[i].vertex[1]];</a>
+<span class="sourceLineNo">241</span><a id="line.241">        TriangleVertex f2v3 = frames[f2].vertices[triangles[i].vertex[2]];</a>
+<span class="sourceLineNo">242</span><a id="line.242"></a>
+<span class="sourceLineNo">243</span><a id="line.243">        float f1x1 = f1v1.v[0] * frames[f1].scale.x + frames[f1].translate.x;</a>
+<span class="sourceLineNo">244</span><a id="line.244">        float f1y1 = f1v1.v[1] * frames[f1].scale.y + frames[f1].translate.y;</a>
+<span class="sourceLineNo">245</span><a id="line.245">        float f1z1 = f1v1.v[2] * frames[f1].scale.z + frames[f1].translate.z;</a>
+<span class="sourceLineNo">246</span><a id="line.246">        float f1x2 = f1v2.v[0] * frames[f1].scale.x + frames[f1].translate.x;</a>
+<span class="sourceLineNo">247</span><a id="line.247">        float f1y2 = f1v2.v[1] * frames[f1].scale.y + frames[f1].translate.y;</a>
+<span class="sourceLineNo">248</span><a id="line.248">        float f1z2 = f1v2.v[2] * frames[f1].scale.z + frames[f1].translate.z;</a>
+<span class="sourceLineNo">249</span><a id="line.249">        float f1x3 = f1v3.v[0] * frames[f1].scale.x + frames[f1].translate.x;</a>
+<span class="sourceLineNo">250</span><a id="line.250">        float f1y3 = f1v3.v[1] * frames[f1].scale.y + frames[f1].translate.y;</a>
+<span class="sourceLineNo">251</span><a id="line.251">        float f1z3 = f1v3.v[2] * frames[f1].scale.z + frames[f1].translate.z;</a>
+<span class="sourceLineNo">252</span><a id="line.252">        float f2x1 = f2v1.v[0] * frames[f2].scale.x + frames[f2].translate.x;</a>
+<span class="sourceLineNo">253</span><a id="line.253">        float f2y1 = f2v1.v[1] * frames[f2].scale.y + frames[f2].translate.y;</a>
+<span class="sourceLineNo">254</span><a id="line.254">        float f2z1 = f2v1.v[2] * frames[f2].scale.z + frames[f2].translate.z;</a>
+<span class="sourceLineNo">255</span><a id="line.255">        float f2x2 = f2v2.v[0] * frames[f2].scale.x + frames[f2].translate.x;</a>
+<span class="sourceLineNo">256</span><a id="line.256">        float f2y2 = f2v2.v[1] * frames[f2].scale.y + frames[f2].translate.y;</a>
+<span class="sourceLineNo">257</span><a id="line.257">        float f2z2 = f2v2.v[2] * frames[f2].scale.z + frames[f2].translate.z;</a>
+<span class="sourceLineNo">258</span><a id="line.258">        float f2x3 = f2v3.v[0] * frames[f2].scale.x + frames[f2].translate.x;</a>
+<span class="sourceLineNo">259</span><a id="line.259">        float f2y3 = f2v3.v[1] * frames[f2].scale.y + frames[f2].translate.y;</a>
+<span class="sourceLineNo">260</span><a id="line.260">        float f2z3 = f2v3.v[2] * frames[f2].scale.z + frames[f2].translate.z;</a>
+<span class="sourceLineNo">261</span><a id="line.261"></a>
+<span class="sourceLineNo">262</span><a id="line.262">        triangle.p1.x = f1x1 + amount * (f2x1 - f1x1);</a>
+<span class="sourceLineNo">263</span><a id="line.263">        triangle.p1.y = f1y1 + amount * (f2y1 - f1y1);</a>
+<span class="sourceLineNo">264</span><a id="line.264">        triangle.p1.z = f1z1 + amount * (f2z1 - f1z1);</a>
+<span class="sourceLineNo">265</span><a id="line.265"></a>
+<span class="sourceLineNo">266</span><a id="line.266">        triangle.p2.x = f1x2 + amount * (f2x2 - f1x2);</a>
+<span class="sourceLineNo">267</span><a id="line.267">        triangle.p2.y = f1y2 + amount * (f2y2 - f1y2);</a>
+<span class="sourceLineNo">268</span><a id="line.268">        triangle.p2.z = f1z2 + amount * (f2z2 - f1z2);</a>
+<span class="sourceLineNo">269</span><a id="line.269"></a>
+<span class="sourceLineNo">270</span><a id="line.270">        triangle.p3.x = f1x3 + amount * (f2x3 - f1x3);</a>
+<span class="sourceLineNo">271</span><a id="line.271">        triangle.p3.y = f1y3 + amount * (f2y3 - f1y3);</a>
+<span class="sourceLineNo">272</span><a id="line.272">        triangle.p3.z = f1z3 + amount * (f2z3 - f1z3);</a>
+<span class="sourceLineNo">273</span><a id="line.273"></a>
+<span class="sourceLineNo">274</span><a id="line.274">        return triangle.calcPlane();</a>
+<span class="sourceLineNo">275</span><a id="line.275">    }</a>
+<span class="sourceLineNo">276</span><a id="line.276"></a>
+<span class="sourceLineNo">277</span><a id="line.277">    @Override</a>
+<span class="sourceLineNo">278</span><a id="line.278">    public void update(Scene scene, SceneNode node) throws Exception {</a>
+<span class="sourceLineNo">279</span><a id="line.279">        if(done) {</a>
+<span class="sourceLineNo">280</span><a id="line.280">            return;</a>
+<span class="sourceLineNo">281</span><a id="line.281">        }</a>
+<span class="sourceLineNo">282</span><a id="line.282"></a>
+<span class="sourceLineNo">283</span><a id="line.283">        amount += speed * Game.getInstance().elapsedTime();</a>
+<span class="sourceLineNo">284</span><a id="line.284">        if(amount &gt;= 1) {</a>
+<span class="sourceLineNo">285</span><a id="line.285">            if(looping) {</a>
+<span class="sourceLineNo">286</span><a id="line.286">                if(frame == end) {</a>
+<span class="sourceLineNo">287</span><a id="line.287">                    frame = start;</a>
+<span class="sourceLineNo">288</span><a id="line.288">                } else {</a>
+<span class="sourceLineNo">289</span><a id="line.289">                    frame++;</a>
+<span class="sourceLineNo">290</span><a id="line.290">                }</a>
+<span class="sourceLineNo">291</span><a id="line.291">                amount = 0;</a>
+<span class="sourceLineNo">292</span><a id="line.292">            } else if(frame == end - 1) {</a>
+<span class="sourceLineNo">293</span><a id="line.293">                amount = 1;</a>
+<span class="sourceLineNo">294</span><a id="line.294">                done = true;</a>
+<span class="sourceLineNo">295</span><a id="line.295">            } else {</a>
+<span class="sourceLineNo">296</span><a id="line.296">                frame++;</a>
+<span class="sourceLineNo">297</span><a id="line.297">                amount = 0;</a>
+<span class="sourceLineNo">298</span><a id="line.298">            }</a>
+<span class="sourceLineNo">299</span><a id="line.299">        }</a>
+<span class="sourceLineNo">300</span><a id="line.300"></a>
+<span class="sourceLineNo">301</span><a id="line.301">        int f1 = frame;</a>
+<span class="sourceLineNo">302</span><a id="line.302">        int f2 = frame + 1;</a>
+<span class="sourceLineNo">303</span><a id="line.303"></a>
+<span class="sourceLineNo">304</span><a id="line.304">        if(f1 == end) {</a>
+<span class="sourceLineNo">305</span><a id="line.305">            f2 = start;</a>
+<span class="sourceLineNo">306</span><a id="line.306">        }</a>
+<span class="sourceLineNo">307</span><a id="line.307"></a>
+<span class="sourceLineNo">308</span><a id="line.308">        AABB b1 = frames[f1].bounds;</a>
+<span class="sourceLineNo">309</span><a id="line.309">        AABB b2 = frames[f2].bounds;</a>
+<span class="sourceLineNo">310</span><a id="line.310"></a>
+<span class="sourceLineNo">311</span><a id="line.311">        b1.min.lerp(b2.min, amount, bounds.min);</a>
+<span class="sourceLineNo">312</span><a id="line.312">        b1.max.lerp(b2.max, amount, bounds.max);</a>
+<span class="sourceLineNo">313</span><a id="line.313">    }</a>
+<span class="sourceLineNo">314</span><a id="line.314"></a>
+<span class="sourceLineNo">315</span><a id="line.315">    @Override</a>
+<span class="sourceLineNo">316</span><a id="line.316">    public int render(Scene scene, SceneNode node, Vector&lt;SceneNode&gt; lights) throws Exception {</a>
+<span class="sourceLineNo">317</span><a id="line.317">        LightRenderer renderer = Game.getInstance().getRenderer(LightRenderer.class);</a>
+<span class="sourceLineNo">318</span><a id="line.318">        int i1 = frame;</a>
+<span class="sourceLineNo">319</span><a id="line.319">        int i2 = frame + 1;</a>
+<span class="sourceLineNo">320</span><a id="line.320"></a>
+<span class="sourceLineNo">321</span><a id="line.321">        if(i1 == end) {</a>
+<span class="sourceLineNo">322</span><a id="line.322">            i2 = start;</a>
+<span class="sourceLineNo">323</span><a id="line.323">        }</a>
+<span class="sourceLineNo">324</span><a id="line.324"></a>
+<span class="sourceLineNo">325</span><a id="line.325">        Frame f1 = frames[i1];</a>
+<span class="sourceLineNo">326</span><a id="line.326">        Frame f2 = frames[i2];</a>
+<span class="sourceLineNo">327</span><a id="line.327"></a>
+<span class="sourceLineNo">328</span><a id="line.328">        renderer.begin(scene, node, lights, texture, decal);</a>
+<span class="sourceLineNo">329</span><a id="line.329"></a>
+<span class="sourceLineNo">330</span><a id="line.330">        for(int i = 0; i != header.numTris; i++) {</a>
+<span class="sourceLineNo">331</span><a id="line.331">            for(int j = 2; j != -1; j--) {</a>
+<span class="sourceLineNo">332</span><a id="line.332">                TriangleVertex v1 = f1.vertices[triangles[i].vertex[j]];</a>
+<span class="sourceLineNo">333</span><a id="line.333">                TriangleVertex v2 = f2.vertices[triangles[i].vertex[j]];</a>
+<span class="sourceLineNo">334</span><a id="line.334">                TextureCoordinate coord = textureCoordinates[triangles[i].st[j]];</a>
+<span class="sourceLineNo">335</span><a id="line.335">                float x1 = v1.v[0] * f1.scale.x + f1.translate.x;</a>
+<span class="sourceLineNo">336</span><a id="line.336">                float y1 = v1.v[1] * f1.scale.y + f1.translate.y;</a>
+<span class="sourceLineNo">337</span><a id="line.337">                float z1 = v1.v[2] * f1.scale.z + f1.translate.z;</a>
+<span class="sourceLineNo">338</span><a id="line.338">                float x2 = v2.v[0] * f2.scale.x + f2.translate.x;</a>
+<span class="sourceLineNo">339</span><a id="line.339">                float y2 = v2.v[1] * f2.scale.y + f2.translate.y;</a>
+<span class="sourceLineNo">340</span><a id="line.340">                float z2 = v2.v[2] * f2.scale.z + f2.translate.z;</a>
+<span class="sourceLineNo">341</span><a id="line.341"></a>
+<span class="sourceLineNo">342</span><a id="line.342">                vertex.position.x = x1 + amount * (x2 - x1);</a>
+<span class="sourceLineNo">343</span><a id="line.343">                vertex.position.y = y1 + amount * (y2 - y1);</a>
+<span class="sourceLineNo">344</span><a id="line.344">                vertex.position.z = z1 + amount * (z2 - z1);</a>
+<span class="sourceLineNo">345</span><a id="line.345">                vertex.textureCoordinate.x = coord.s / (float)header.skinWidth;</a>
+<span class="sourceLineNo">346</span><a id="line.346">                vertex.textureCoordinate.y = coord.t / (float)header.skinHeight;</a>
+<span class="sourceLineNo">347</span><a id="line.347">                vertex.normal.x = normals[v1.n][0] + amount * (normals[v2.n][0] - normals[v1.n][0]);</a>
+<span class="sourceLineNo">348</span><a id="line.348">                vertex.normal.y = normals[v1.n][1] + amount * (normals[v2.n][1] - normals[v1.n][1]);</a>
+<span class="sourceLineNo">349</span><a id="line.349">                vertex.normal.z = normals[v1.n][2] + amount * (normals[v2.n][2] - normals[v1.n][2]);</a>
+<span class="sourceLineNo">350</span><a id="line.350"></a>
+<span class="sourceLineNo">351</span><a id="line.351">                renderer.push(vertex);</a>
+<span class="sourceLineNo">352</span><a id="line.352">            }</a>
+<span class="sourceLineNo">353</span><a id="line.353">        }</a>
+<span class="sourceLineNo">354</span><a id="line.354">        renderer.end();</a>
+<span class="sourceLineNo">355</span><a id="line.355"></a>
+<span class="sourceLineNo">356</span><a id="line.356">        return getTriangleCount();</a>
+<span class="sourceLineNo">357</span><a id="line.357">    }</a>
+<span class="sourceLineNo">358</span><a id="line.358"></a>
+<span class="sourceLineNo">359</span><a id="line.359">    @Override</a>
+<span class="sourceLineNo">360</span><a id="line.360">    public Renderable newInstance() throws Exception {</a>
+<span class="sourceLineNo">361</span><a id="line.361">        return new KeyFrameMesh(this);</a>
+<span class="sourceLineNo">362</span><a id="line.362">    }</a>
+<span class="sourceLineNo">363</span><a id="line.363">    </a>
+<span class="sourceLineNo">364</span><a id="line.364">}</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</main>
+</body>
+</html>
