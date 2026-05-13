@@ -87,24 +87,40 @@ function tree(me, parent, zrot, length, depth) {
 	sphereNode1.specularColor.set(2, 2, 2, 1);
 	sphereNode2.specularColor.set(2, 2, 2, 1);
 	
-	if(depth < 5) {
+	if(depth < 3) {
 		var node1 = new SceneNode();
 		var node2 = new SceneNode();
+		var node3 = new SceneNode();
+		var node4 = new SceneNode();
 		
 		if(zrot) {
 			node1.rotate(2, -30);
 			node2.rotate(2, 30);
+			node3.rotate(1, 90);
+			node3.rotate(2, -30);
+			node4.rotate(1, 90);
+			node4.rotate(2, 30);
 		} else {
 			node1.rotate(0, -30);
 			node2.rotate(0, 30);
+			node3.rotate(1, 90);
+			node3.rotate(0, -30);
+			node4.rotate(1, 90);
+			node4.rotate(0, 30);
 		}
 		node1.position.set(0, length, 0);
 		node2.position.set(0, length, 0);
+		node3.position.set(0, length, 0);
+		node4.position.set(0, length, 0);
 		
 		parent.addChild(node1);
 		parent.addChild(node2);
-		tree(me, node1, !zrot, length * 0.75, depth + 1);
-		tree(me, node2, !zrot, length * 0.75, depth + 1);
+		parent.addChild(node3);
+		parent.addChild(node4);
+		tree(me, node1, !zrot, length * 0.65, depth + 1);
+		tree(me, node2, !zrot, length * 0.65, depth + 1);
+		tree(me, node3, !zrot, length * 0.65, depth + 1);
+		tree(me, node4, !zrot, length * 0.65, depth + 1);
 	}
 }
 
