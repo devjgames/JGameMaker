@@ -538,6 +538,12 @@ class UIGameEditor extends JFrame implements GameLoop {
                                             tree.populate();
                                         } 
                                     } else {
+                                        for(SceneNode child : node) {
+                                            if(child.absolutePosition.distance(scene.brush.position) < 1) {
+                                                child.detach();
+                                                break;
+                                            }
+                                        }
                                         node.addChild(new SceneNode(scene, scene.brush));
                                         tree.populate();
                                         tree.setSelection(node.getChild(node.getChildCount() - 1));
