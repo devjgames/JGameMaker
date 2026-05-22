@@ -150,6 +150,8 @@ class UIGameEditor extends JFrame implements GameLoop {
 
             SceneNode node = brushes.get(brush);
 
+            setTitle("JGameMaker - " + node.name);
+
             node.r.set(1, 0, 0);
             node.u.set(0, 1, 0);
             node.f.set(0, 0, 1);
@@ -334,6 +336,7 @@ class UIGameEditor extends JFrame implements GameLoop {
                 scene.root.addBrushes(scene, brushes);
                 if(!brushes.isEmpty()) {
                     brush = 0;
+                    setTitle("JGameMaker - " + brushes.get(0).name);
                 }
                 for(SceneNode node : brushes) {
                     node.r.set(1, 0, 0);
@@ -348,6 +351,7 @@ class UIGameEditor extends JFrame implements GameLoop {
             brush = -1;
             brushes.clear();
             scene.brush = null;
+            setTitle("JGameMaker - " + scene.file.getName());
         }
         if(scene == null) {
             GFX.clear(0.15f, 0.15f, 0.15f, 1);
