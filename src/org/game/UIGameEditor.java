@@ -147,7 +147,7 @@ class UIGameEditor extends JFrame implements GameLoop {
     public void nextBrush() {
         if(brush != -1) {
             brush = (brush + 1) % brushes.size();
-            
+
             SceneNode node = brushes.get(brush);
 
             node.r.set(1, 0, 0);
@@ -539,12 +539,21 @@ class UIGameEditor extends JFrame implements GameLoop {
                                         } 
                                     } else {
                                         for(SceneNode child : node) {
-                                            if(child.absolutePosition.distance(scene.brush.position) < 1) {
+                                            float x1 = child.position.x;
+                                            float z1 = child.position.z;
+                                            float x2 = scene.brush.position.x;
+                                            float z2 = scene.brush.position.z;
+                                            float dx = x2 - x1;
+                                            float dz = z2 - z1;
+                                            float d = (float)Math.sqrt(dx * dx + dz * dz);
+                                            if(d < 1) {
+                                                Log.put(1, "detaching old tile");
                                                 child.detach();
                                                 break;
                                             }
                                         }
                                         node.addChild(new SceneNode(scene, scene.brush));
+                                        node.getChild(node.getChildCount() - 1).isBrush = false;
                                         tree.populate();
                                         tree.setSelection(node.getChild(node.getChildCount() - 1));
                                     }

@@ -16,7 +16,7 @@ function create(me) {
 function init(me) {
 	if(!me.scene().isInDesign()) {
 		me.scene().target.set(me.node().position.x, 0, me.node().position.z);
-		me.scene().target.add(0, 700, -1000, me.scene().eye);
+		me.scene().target.add(0, 1000, 1400, me.scene().eye);
 		me.scene().up.set(0, 1, 0);
 	}
 }
@@ -28,25 +28,25 @@ function update(me) {
 	if(!me.scene().isInDesign()) {
 		me.properties._collider.velocity.scale(0, 1, 0);
 		if(game.keyDown(Keys.KEY_UP)) {
-			me.properties._collider.velocity.z = 100;
-		} else if(game.keyDown(Keys.KEY_DOWN)) {
 			me.properties._collider.velocity.z = -100;
+		} else if(game.keyDown(Keys.KEY_DOWN)) {
+			me.properties._collider.velocity.z = 100;
 		}
 		if(game.keyDown(Keys.KEY_LEFT)) {
-			me.properties._collider.velocity.x = 100;
-		} else if(game.keyDown(Keys.KEY_RIGHT)) {
 			me.properties._collider.velocity.x = -100;
+		} else if(game.keyDown(Keys.KEY_RIGHT)) {
+			me.properties._collider.velocity.x = 100;
 		}
-		me.properties._collider.velocity.y = -1000 * game.elapsedTime();
+		me.properties._collider.velocity.y -= 2000 * game.elapsedTime();
 		me.properties._collider.resolve(me.scene(), me.scene().root, me.node().position);
 		var x = me.node().position.x;
 		var z = me.node().position.z;
-		x = Math.max(me.scene().root.bounds.min.x + 256, x);
-		x = Math.min(me.scene().root.bounds.max.x - 256, x);
-		z = Math.max(me.scene().root.bounds.min.z + 256 + 64, z);
-		z = Math.min(me.scene().root.bounds.max.z - 128, z);
+		x = Math.max(me.scene().root.bounds.min.x + 256 + 32, x);
+		x = Math.min(me.scene().root.bounds.max.x - 256 - 32, x);
+		z = Math.max(me.scene().root.bounds.min.z + 256, z);
+		z = Math.min(me.scene().root.bounds.max.z - 256 - 128, z);
 		me.scene().target.set(x, 0, z);
-		me.scene().target.add(0, 700, -1000, me.scene().eye);
+		me.scene().target.add(0, 1000, 1400, me.scene().eye);
 	}
 }
 
