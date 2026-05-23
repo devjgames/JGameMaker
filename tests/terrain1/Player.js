@@ -52,7 +52,7 @@ function renderSprites(me, renderer) {
 		"RES = " + Resource.getInstances() + "\n" +
 		"TRI = " + sceneRenderer.getTrianglesRendered() + "\n" +
 		"TST = " + me.properties.controller.collider.getTested(),
-		8, 12, 100, 5, 10, 10, 0, 0, 0, 1
+		8, 12, 100, 5, 10, 10, 1, 1, 1, 1
 	);
 	renderer.endSprite();
 }

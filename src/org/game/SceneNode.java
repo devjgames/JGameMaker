@@ -4,6 +4,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.swing.JComboBox;
+
 public final class SceneNode implements Iterable<SceneNode> {
 
     public static interface Visitor {
@@ -269,9 +271,9 @@ public final class SceneNode implements Iterable<SceneNode> {
         return null;
     }
 
-    void addBrushes(Scene scene, Vector<SceneNode> brushes) throws Exception {
+    void addBrushes(Scene scene, JComboBox<SceneNode> brushes) throws Exception {
         if(isBrush) {
-            brushes.add(new SceneNode(scene, this));
+            brushes.addItem(new SceneNode(scene, this));
         } else {
             for(SceneNode node : this) {
                 node.addBrushes(scene, brushes);

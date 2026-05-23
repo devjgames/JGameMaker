@@ -2,10 +2,13 @@ package org.game;
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Hashtable;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
@@ -13,6 +16,7 @@ class UIBottomBar extends JPanel {
     
     private Hashtable<String, JButton> buttons = new Hashtable<>();
     private Hashtable<String, JToggleButton> toggleButtons = new Hashtable<>();
+    private JComboBox<SceneNode> brushes = new JComboBox<>();
 
     public UIBottomBar() {
         super(new FlowLayout(FlowLayout.LEFT, 5, 5));
@@ -72,7 +76,7 @@ class UIBottomBar extends JPanel {
         }));
         add(toggleButtons.get("Pause"));
 
-        buttons.put("Target To", new JButton(new AbstractAction("Target To") {
+        buttons.put("Target To", new JButton(new AbstractAction("Targ To") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 UIGameEditor gameEditor = UIGameEditor.getInstance();
@@ -85,7 +89,7 @@ class UIBottomBar extends JPanel {
         }));
         add(buttons.get("Target To"));
 
-        buttons.put("To Target", new JButton(new AbstractAction("To Target") {
+        buttons.put("To Target", new JButton(new AbstractAction("To Targ") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 UIGameEditor gameEditor = UIGameEditor.getInstance();
@@ -96,7 +100,7 @@ class UIBottomBar extends JPanel {
         }));
         add(buttons.get("To Target"));
 
-        buttons.put("Zero Target", new JButton(new AbstractAction("Zero Target") {
+        buttons.put("Zero Target", new JButton(new AbstractAction("ZTarg") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 UIGameEditor gameEditor = UIGameEditor.getInstance();
@@ -109,7 +113,7 @@ class UIBottomBar extends JPanel {
         }));
         add(buttons.get("Zero Target"));
 
-        buttons.put("Zero Rot", new JButton(new AbstractAction("Zero Rot") {
+        buttons.put("Zero Rot", new JButton(new AbstractAction("ZRot") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 SceneNode node = UIGameEditor.getInstance().getSelection();
@@ -121,7 +125,7 @@ class UIBottomBar extends JPanel {
         }));
         add(buttons.get("Zero Rot"));
 
-        buttons.put("Rot X 45", new JButton(new AbstractAction("Rot X 45") {
+        buttons.put("Rot X 45", new JButton(new AbstractAction("RX 45") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 UIGameEditor.getInstance().getSelection().rotate(0, 45);
@@ -129,7 +133,7 @@ class UIBottomBar extends JPanel {
         }));
         add(buttons.get("Rot X 45"));
 
-        buttons.put("Rot Y 45", new JButton(new AbstractAction("Rot Y 45") {
+        buttons.put("Rot Y 45", new JButton(new AbstractAction("RY 45") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 UIGameEditor.getInstance().getSelection().rotate(1, 45);
@@ -137,7 +141,7 @@ class UIBottomBar extends JPanel {
         }));
         add(buttons.get("Rot Y 45"));
 
-        buttons.put("Rot Z 45", new JButton(new AbstractAction("Rot Z 45") {
+        buttons.put("Rot Z 45", new JButton(new AbstractAction("RZ 45") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 UIGameEditor.getInstance().getSelection().rotate(2, 45);
@@ -145,13 +149,27 @@ class UIBottomBar extends JPanel {
         }));
         add(buttons.get("Rot Z 45"));
 
-        buttons.put("Unit Scale", new JButton(new AbstractAction("Unit Scale") {
+        buttons.put("Unit Scale", new JButton(new AbstractAction("UScale") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 UIGameEditor.getInstance().getSelection().scale.set(1, 1, 1);
             }
         }));
         add(buttons.get("Unit Scale"));
+
+        add(brushes);
+        brushes.addItemListener(new ItemListener() {
+
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                UIGameEditor.getInstance().setBrush();
+            }
+            
+        });
+    }
+
+    public JComboBox<SceneNode> getBrushes() {
+        return brushes;
     }
 
     public void enableUI() {
@@ -171,5 +189,7 @@ class UIBottomBar extends JPanel {
         buttons.get("Rot Y 45").setEnabled(enabled && !isPlaying && hasSelection);
         buttons.get("Rot Z 45").setEnabled(enabled && !isPlaying && hasSelection);
         buttons.get("Unit Scale").setEnabled(enabled && !isPlaying && hasSelection);
+
+        brushes.setEnabled(enabled && !UIGameEditor.getInstance().isPlaying());
     }
 }

@@ -66,14 +66,6 @@ class UITopBar extends JPanel {
 
         toggleButtons.get("Zoom").setSelected(true);
 
-        buttons.put("Next Brush", new JButton(new AbstractAction("Next Brush") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                UIGameEditor.getInstance().nextBrush();
-            }
-        }));
-        add(buttons.get("Next Brush"));
-
         buttons.put("Shot", new JButton(new AbstractAction("Shot") {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -106,6 +98,5 @@ class UITopBar extends JPanel {
             toggleButtons.get(caption).setEnabled(enabled && !UIGameEditor.getInstance().isPlaying());
         }
         buttons.get("Shot").setEnabled(enabled);
-        buttons.get("Next Brush").setEnabled(enabled && !UIGameEditor.getInstance().isPlaying());
     }
 }

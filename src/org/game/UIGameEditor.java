@@ -1,5 +1,6 @@
 package org.game;
 
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -15,7 +16,6 @@ import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.io.File;
-import java.util.Vector;
 
 class UIGameEditor extends JFrame implements GameLoop {
 
@@ -45,8 +45,6 @@ class UIGameEditor extends JFrame implements GameLoop {
     private boolean down = false;
     private boolean down2 = false;
     private boolean play = false;
-    private final Vector<SceneNode> brushes = new Vector<>();
-    private int brush = -1;
     private boolean initBrushes = false;
     private final Vec3 origin = new Vec3();
     private final Vec3 direction = new Vec3();
@@ -144,13 +142,11 @@ class UIGameEditor extends JFrame implements GameLoop {
         initBrushes = true;
     }
 
-    public void nextBrush() {
-        if(brush != -1) {
-            brush = (brush + 1) % brushes.size();
+    public void setBrush() {
+        JComboBox<SceneNode> brushes = bottomBar.getBrushes();
 
-            SceneNode node = brushes.get(brush);
-
-            setTitle("JGameMaker - " + node.name);
+        if(brushes.getItemCount() != 0) {
+            SceneNode node = (SceneNode)brushes.getSelectedItem();
 
             node.r.set(1, 0, 0);
             node.u.set(0, 1, 0);
@@ -234,8 +230,7 @@ class UIGameEditor extends JFrame implements GameLoop {
             try {
                 if(scene != null) {
                     scene.brush = null;
-                    brushes.clear();
-                    brush = -1;
+                    bottomBar.getBrushes().removeAllItems();
                 }
                 game.getAssets().clear();
                 scene = null;
@@ -310,8 +305,7 @@ class UIGameEditor extends JFrame implements GameLoop {
 
                 if(scene != null) {
                     scene.brush = null;
-                    brushes.clear();
-                    brush = -1;
+                    bottomBar.getBrushes().removeAllItems();
                 }
 
                 game.getAssets().clear();
@@ -330,15 +324,17 @@ class UIGameEditor extends JFrame implements GameLoop {
         } else if(initBrushes) {
             initBrushes = false;
             try {
+                JComboBox<SceneNode> brushes = bottomBar.getBrushes();
+
                 scene.brush = null;
-                brush = -1;
-                brushes.clear();
+                brushes.removeAllItems();
                 scene.root.addBrushes(scene, brushes);
-                if(!brushes.isEmpty()) {
-                    brush = 0;
-                    setTitle("JGameMaker - " + brushes.get(0).name);
+                if(brushes.getItemCount() != 0) {
+                    brushes.setSelectedIndex(0);
                 }
-                for(SceneNode node : brushes) {
+                for(int i = 0; i != brushes.getItemCount(); i++) {
+                    SceneNode node = brushes.getItemAt(i);
+
                     node.r.set(1, 0, 0);
                     node.u.set(0, 1, 0);
                     node.f.set(0, 0, 1);
@@ -348,10 +344,8 @@ class UIGameEditor extends JFrame implements GameLoop {
             }
         } else if (stopPainting) {
             stopPainting = false;
-            brush = -1;
-            brushes.clear();
+            bottomBar.getBrushes().removeAllItems();
             scene.brush = null;
-            setTitle("JGameMaker - " + scene.file.getName());
         }
         if(scene == null) {
             GFX.clear(0.15f, 0.15f, 0.15f, 1);
@@ -386,7 +380,9 @@ class UIGameEditor extends JFrame implements GameLoop {
                         State.properties.clear();
                     }
                 } else {
-                    if(brush != -1) {
+                    JComboBox<SceneNode> brushes = bottomBar.getBrushes();
+
+                    if(brushes.getSelectedIndex() >= 0) {
                         int x = game.mouseX();
                         int y = game.h() - game.mouseY() - 1;
                         
@@ -408,7 +404,7 @@ class UIGameEditor extends JFrame implements GameLoop {
                                 ipoint.z = Math.round(ipoint.z / snap) * snap;
                             }
 
-                            scene.brush = brushes.get(brush);
+                            scene.brush = (SceneNode)brushes.getSelectedItem();
                             scene.brush.visible = true;
                             scene.brush.position.set(ipoint.x, scene.brush.position.y, ipoint.z);
                         }
@@ -483,7 +479,9 @@ class UIGameEditor extends JFrame implements GameLoop {
                     enableUI();
                 }
             } else if(mode == UITopBar.PAINT) {
-                if(brush != -1) {
+                JComboBox<SceneNode> brushes = bottomBar.getBrushes();
+
+                if(brushes.getSelectedIndex() >= 0) {
                     int x = game.mouseX();
                     int y = game.h() - game.mouseY() - 1;
                     
@@ -506,7 +504,7 @@ class UIGameEditor extends JFrame implements GameLoop {
                             ipoint.z = Math.round(ipoint.z / snap) * snap;
                         }
 
-                        scene.brush = brushes.get(brush);
+                        scene.brush = (SceneNode)brushes.getSelectedItem();
                         scene.brush.position.set(ipoint.x, scene.brush.position.y, ipoint.z);
 
                         if(!down) {
@@ -605,8 +603,10 @@ class UIGameEditor extends JFrame implements GameLoop {
         }
         if(game.buttonDown(1)) {
             if(!down2) {
-                if(mode == UITopBar.PAINT && brush != -1) {
-                    SceneNode node = brushes.get(brush);
+                JComboBox<SceneNode> brushes = bottomBar.getBrushes();
+
+                if(mode == UITopBar.PAINT && brushes.getSelectedIndex() >= 0) {
+                    SceneNode node = (SceneNode)brushes.getSelectedItem();
 
                     node.rotate(1, 45);
                 }
