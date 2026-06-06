@@ -1,0 +1,3 @@
+mage.md2 was created by importing the exported frames of the mage asset animation, taken from https://opengameart.org/content/animated-female-mage, in blender into the md2 format
+
+see, https://opengameart.org/content/animated-female-mage, for license usage

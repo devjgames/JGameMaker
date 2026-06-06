@@ -137,14 +137,14 @@ class UISceneTree extends JTree {
         SceneNode selection = UIGameEditor.getInstance().getSelection();
         SceneNode clipboard = UIGameEditor.getInstance().getClipboard();
 
-        items.get("Add Mesh").setEnabled(scene != null && !isPlaying);
-        items.get("Add KFM").setEnabled(scene != null && !isPlaying);
-        items.get("Add Node").setEnabled(scene != null && !isPlaying);
-        items.get("Cut Node").setEnabled(scene != null && !isPlaying && selection != null);
-        items.get("Copy Node").setEnabled(scene != null && !isPlaying && selection != null);
-        items.get("Paste Node").setEnabled(scene != null && !isPlaying && clipboard != null);
-        items.get("Delete Node").setEnabled(scene != null && !isPlaying && selection != null);
-        items.get("Refresh").setEnabled(scene != null && !isPlaying);
+        items.get("Add Mesh").setEnabled(scene != null && AssetManager.root != null && !isPlaying);
+        items.get("Add KFM").setEnabled(scene != null && AssetManager.root != null && !isPlaying);
+        items.get("Add Node").setEnabled(scene != null && AssetManager.root != null && !isPlaying);
+        items.get("Cut Node").setEnabled(scene != null && AssetManager.root != null && !isPlaying && selection != null);
+        items.get("Copy Node").setEnabled(scene != null && AssetManager.root != null && !isPlaying && selection != null);
+        items.get("Paste Node").setEnabled(scene != null && AssetManager.root != null && !isPlaying && clipboard != null);
+        items.get("Delete Node").setEnabled(scene != null && AssetManager.root != null && !isPlaying && selection != null);
+        items.get("Refresh").setEnabled(scene != null && AssetManager.root != null && !isPlaying);
     }
 
     public void setSelection(SceneNode node) {

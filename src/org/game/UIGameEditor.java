@@ -1,11 +1,13 @@
 package org.game;
 
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
@@ -49,9 +51,16 @@ class UIGameEditor extends JFrame implements GameLoop {
     private final Vec3 origin = new Vec3();
     private final Vec3 direction = new Vec3();
     private boolean stopPainting = false;
+    private JFileChooser chooser = new JFileChooser();
+    private boolean clearAssets = false;
+    private boolean openWorkspace = false;
     
     public UIGameEditor(int width, int height) throws Exception {
         instance = this;
+
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
+        chooser.setCurrentDirectory(IO.file("."));
 
         setTitle("JGameMaker");
         setResizable(true);
@@ -109,6 +118,8 @@ class UIGameEditor extends JFrame implements GameLoop {
 
         game = new Game(width, height, canvas, this);
         game.addWindowListener(this);
+        
+        enableUI();
     }
 
     public JTextArea getConsoleArea() {
@@ -127,15 +138,8 @@ class UIGameEditor extends JFrame implements GameLoop {
         play = true;
     }
 
-    public void start() {
-        try {
-            new ProcessBuilder()
-                .inheritIO()
-                .command("java",  "-jar", "JGameMaker.jar", AssetManager.getRoot().getPath(), scene.file.getName())
-                .start();
-        } catch(Exception ex) {
-            Log.put(0, ex);
-        }
+    public void open() {
+        openWorkspace = true;
     }
 
     public void startPainting() {
@@ -223,7 +227,35 @@ class UIGameEditor extends JFrame implements GameLoop {
 
     @Override
     public void render() throws Exception {
-        if(loadSceneFile != null) {
+        if(openWorkspace) {
+            openWorkspace = false;
+            try {
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    @Override
+                    public void run() {
+                        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                        if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                            File file = chooser.getSelectedFile();
+
+                            if(file.isDirectory()) {
+                                AssetManager.root = file;
+                                scene = null;
+                                tree.populate();
+                                assetList.populate();
+                                tree.setSelection(null);
+                                enableUI();
+                                clearAssets = true;
+                            }
+                        }
+                    }
+                });
+            } catch(Exception ex) {
+                Log.put(0, ex);
+            }
+        } else if(clearAssets) {
+            clearAssets = false;
+            game.getAssets().clear();
+        } else if(loadSceneFile != null) {
             File file = loadSceneFile;
 
             loadSceneFile = null;

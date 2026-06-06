@@ -92,7 +92,7 @@ class UITopBar extends JPanel {
     }
 
     public void enableUI() {
-        boolean enabled = UIGameEditor.getInstance().getScene() != null;
+        boolean enabled = UIGameEditor.getInstance().getScene() != null && AssetManager.root != null;
 
         for(String caption : captions) {
             toggleButtons.get(caption).setEnabled(enabled && !UIGameEditor.getInstance().isPlaying());

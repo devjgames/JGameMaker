@@ -21,6 +21,14 @@ class UIBottomBar extends JPanel {
     public UIBottomBar() {
         super(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
+        buttons.put("Open", new JButton(new AbstractAction("Open") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UIGameEditor.getInstance().open();
+            }
+        }));
+        add(buttons.get("Open"));
+
         buttons.put("Save", new JButton(new AbstractAction("Save") {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -42,14 +50,6 @@ class UIBottomBar extends JPanel {
             }
         }));
         add(buttons.get("Play"));
-
-        buttons.put("Start", new JButton(new AbstractAction("Start") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                UIGameEditor.getInstance().start();
-            }
-        }));
-        add(buttons.get("Start"));
 
         buttons.put("Edit Scene", new JButton(new AbstractAction("Edit Scene") {
             @Override
@@ -173,13 +173,12 @@ class UIBottomBar extends JPanel {
     }
 
     public void enableUI() {
-        boolean enabled = UIGameEditor.getInstance().getScene() != null;
+        boolean enabled = UIGameEditor.getInstance().getScene() != null && AssetManager.root != null;
         boolean isPlaying = UIGameEditor.getInstance().isPlaying();
         boolean hasSelection = UIGameEditor.getInstance().getSelection() != null;
 
         buttons.get("Save").setEnabled(enabled && !isPlaying);
         buttons.get("Play").setEnabled(enabled && !isPlaying);
-        buttons.get("Start").setEnabled(enabled);
         buttons.get("Edit Scene").setEnabled(enabled && !isPlaying);
         buttons.get("Target To").setEnabled(enabled && !isPlaying && hasSelection);
         buttons.get("To Target").setEnabled(enabled && !isPlaying && hasSelection);

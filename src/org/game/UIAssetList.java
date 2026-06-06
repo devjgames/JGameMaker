@@ -341,7 +341,7 @@ class UIAssetList extends JList<String> {
 
     public void enableUI() {
         UIGameEditor gameEditor = UIGameEditor.getInstance();
-        boolean enabled = !gameEditor.isPlaying();
+        boolean enabled = !gameEditor.isPlaying() && AssetManager.root != null;
 
         for(String key : items.keySet()) {
             items.get(key).setEnabled(enabled);
@@ -374,32 +374,34 @@ class UIAssetList extends JList<String> {
         return null;
     }
 
-    private void populate() {
-        File[] files = AssetManager.getRoot().listFiles();
-        Vector<String> names = new Vector<>();
+    public void populate() {
+        if(AssetManager.getRoot() != null) {
+            File[] files = AssetManager.getRoot().listFiles();
+            Vector<String> names = new Vector<>();
 
-        if(files != null) {
-            for(File file : files) {
-                if(file.isFile() && !file.getName().equals(".DS_Store")) {
-                    names.add(file.getName());
+            if(files != null) {
+                for(File file : files) {
+                    if(file.isFile() && !file.getName().equals(".DS_Store")) {
+                        names.add(file.getName());
+                    }
                 }
             }
-        }
-        names.sort((a, b) -> {
-            String e1 = IO.getExtension(IO.file(a));
-            String e2 = IO.getExtension(IO.file(b));
+            names.sort((a, b) -> {
+                String e1 = IO.getExtension(IO.file(a));
+                String e2 = IO.getExtension(IO.file(b));
 
-            if(e1.equals(e2)) {
-                return a.compareTo(b);
-            } else {
-                return e1.compareTo(e2);
+                if(e1.equals(e2)) {
+                    return a.compareTo(b);
+                } else {
+                    return e1.compareTo(e2);
+                }
+            });
+
+            model.removeAllElements();
+
+            for(String name : names) {
+                model.addElement(name);
             }
-        });
-
-        model.removeAllElements();
-
-        for(String name : names) {
-            model.addElement(name);
         }
     }
 }

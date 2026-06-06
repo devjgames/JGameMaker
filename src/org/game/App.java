@@ -1,8 +1,5 @@
 package org.game;
 
-import java.io.File;
-
-import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 
 
@@ -63,23 +60,7 @@ public class App {
             
             });
         } else {
-            JFileChooser chooser = new JFileChooser(IO.file(".").getAbsoluteFile());
-
-            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                File file = chooser.getSelectedFile();
-
-                if(file.isDirectory()) {
-                    AssetManager.root = file;
-                }
-            }
-
-            if(AssetManager.root != null) {
-                new UIGameEditor(600, 400);
-            } else {
-                System.out.println("directory not selected");
-                System.exit(0);
-            }
+            new UIGameEditor(600, 400);
         }
     }
 }
