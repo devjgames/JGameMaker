@@ -177,6 +177,7 @@ class UIBottomBar extends JPanel {
         boolean isPlaying = UIGameEditor.getInstance().isPlaying();
         boolean hasSelection = UIGameEditor.getInstance().getSelection() != null;
 
+        buttons.get("Open").setEnabled(!isPlaying);
         buttons.get("Save").setEnabled(enabled && !isPlaying);
         buttons.get("Play").setEnabled(enabled && !isPlaying);
         buttons.get("Edit Scene").setEnabled(enabled && !isPlaying);

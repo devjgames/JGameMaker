@@ -16,7 +16,7 @@ function create(me) {
 function init(me) {
 	if(!me.scene().isInDesign()) {
 		me.scene().target.set(me.node().position.x, 0, me.node().position.z);
-		me.scene().target.add(0, 1400, 1800, me.scene().eye);
+		me.scene().target.add(0, 700, 900, me.scene().eye);
 		me.scene().up.set(0, 1, 0);
 	}
 }
@@ -41,12 +41,12 @@ function update(me) {
 		me.properties._collider.resolve(me.scene(), me.scene().root, me.node().position);
 		var x = me.node().position.x;
 		var z = me.node().position.z;
-		x = Math.max(me.scene().root.bounds.min.x + 256 + 128, x);
-		x = Math.min(me.scene().root.bounds.max.x - 256 - 128, x);
-		z = Math.max(me.scene().root.bounds.min.z + 256 + 128, z);
-		z = Math.min(me.scene().root.bounds.max.z - 256 - 128, z);
+		x = Math.max(me.scene().root.bounds.min.x + 256, x);
+		x = Math.min(me.scene().root.bounds.max.x - 256, x);
+		z = Math.max(me.scene().root.bounds.min.z + 128, z);
+		z = Math.min(me.scene().root.bounds.max.z - 256 - 64, z);
 		me.scene().target.set(x, 0, z);
-		me.scene().target.add(0, 1400, 1800, me.scene().eye);
+		me.scene().target.add(0, 700, 900, me.scene().eye);
 	}
 }
 
