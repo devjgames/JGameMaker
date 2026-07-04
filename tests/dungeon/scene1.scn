@@ -19,6 +19,6 @@
 		<Door _y="0"/>
 	</node>
 	<node renderable="door.obj" name="door.obj" visible="true" collidable="false" dynamic="false" emitsLight="false" receivesLight="true" isLocation="false" drawLines="false" drawTreeLines="false" isBrush="false" position="-768.0 0.0 -960.0" absolutePosition="-768.0 0.0 -960.0" r="-1.0 0.0 0.0" u="0.0 1.0 0.0" f="0.0 0.0 -1.0" scale="1.0 1.0 1.0" ambientColor="0.15 0.15 0.15 1.0" diffuseColor="1.0 1.0 1.0 1.0" specularColor="0.0 0.0 0.0 1.0" specularPower="64.0" lightColor="1.0 1.0 1.0 1.0" lightRadius="300.0" depthState="READWRITE" cullState="BACK" blendState="OPAQUE" zOrder="0" minTrisPerTree="16" triangleTag="1" warpEnabled="false" warpAmplitude="8.0" warpFrequency="0.05" warpSpeed="2.0" warpY="false">
-		<Door _y="64"/>
+		<Door _y="0"/>
 	</node>
 </scene>

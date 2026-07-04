@@ -6,6 +6,9 @@ var IO = org.game.IO;
 var Log = org.game.Log;
 var Controller = org.game.Controller;
 var Resource = org.game.Resource;
+var Keys = org.game.Keys;
+var State = org.game.State;
+var AssetManager = org.game.AssetManager;
 
 function create(me) {
 	me.properties.gravity = -2000;
@@ -14,6 +17,7 @@ function create(me) {
 	me.properties.controller = new Controller();
 	me.properties._frame = 0
 	me.properties._amount = 0
+	me.properties._loadName = "";
 	
 	me.propertyNames.add("speed");
 	me.propertyNames.add("gravity");
@@ -21,6 +25,9 @@ function create(me) {
 }
 
 function init(me) {
+	if(State.properties.get("down") == null) {
+		State.properties.put("down", false);
+	}
 }
 
 function start(me) {
@@ -48,6 +55,34 @@ function update(me) {
 		me.properties._frame = (me.properties._frame + 1) % 12;
 		me.properties._amount = 0
 	}
+	if(game.keyDown(Keys.KEY_SPACE)) {
+		if(!State.properties.get("down")) {
+			State.properties.put("down", true);
+			
+			var name = me.scene().getSceneName();
+			var i = 1;
+			
+			while(true) {
+				var n = "scene" + i;
+				
+				if(n == name) {
+					n = "scene" + (i + 1);
+					
+					var f = IO.file(AssetManager.getRoot(), n + ".scn");
+					
+					if(!f.exists()) {
+						n = "scene1";
+					}
+					me.properties._loadName = n;
+					
+					break;
+				}
+				i += 1
+			}
+		}
+	} else {
+		State.properties.put("down", false);
+	}
 }
 
 function renderSprites(me, renderer) {
@@ -59,7 +94,8 @@ function renderSprites(me, renderer) {
 		"FPS = " + game.frameRate() + "\n" +
 		"RES = " + Resource.getInstances() + "\n" +
 		"TRI = " + sceneRenderer.getTrianglesRendered() + "\n" +
-		"TST = " + me.properties.controller.collider.getTested(),
+		"TST = " + me.properties.controller.collider.getTested() + "\n" +
+		"SPC = Next Scene",
 		8, 12, 100, 5, 10, 10, 1, 1, 1, 1
 	);
 	if(!me.scene().isInDesign()) {
@@ -76,5 +112,8 @@ function receiveMessage(me, component, type) {
 }
 
 function loadSceneName(me) {
+	if(me.properties._loadName != "") {
+    	return me.properties._loadName;
+    }
     return null;
 }
