@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL20;
 final class LightRenderer extends Renderer {
     
     public static final int VERTEX_STRIDE = 12;
-    public static final int MAX_LIGHTS = 6;
+    public static final int MAX_LIGHTS = 8;
     
     private final Shader shader;
     private final int vbo;

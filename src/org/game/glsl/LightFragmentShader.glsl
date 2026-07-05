@@ -1,4 +1,4 @@
-#define MAX_LIGHTS 6
+#define MAX_LIGHTS 8
 
 varying vec3 vPosition;
 varying vec2 vTextureCoordinate;
