@@ -72,10 +72,14 @@ public final class SceneRenderer extends Renderer {
 
         scene.root.traverse((n) -> {
             if(n.visible) {
-                if(n.emitsLight) {
-                    lights.add(n);
+                if(scene.frustum.contains(n.bounds)) {
+                    if(n.emitsLight) {
+                        if(scene.frustum.contains(n.absolutePosition, n.lightRadius)) {
+                            lights.add(n);
+                        }
+                    }
+                    return true;
                 }
-                return true;
             }
             return false;
         });
@@ -83,10 +87,14 @@ public final class SceneRenderer extends Renderer {
         if(scene.brush != null) {
             scene.brush.traverse((n) -> {
                 if(n.visible) {
-                    if(n.emitsLight) {
-                        lights.add(n);
+                    if(scene.frustum.contains(n.bounds)) {
+                        if(n.emitsLight) {
+                            if(scene.frustum.contains(n.absolutePosition, n.lightRadius)) {
+                                lights.add(n);
+                            }
+                        }
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             });
@@ -103,9 +111,19 @@ public final class SceneRenderer extends Renderer {
 
         scene.root.traverse((n) -> {
             if(n.visible) {
-                if(n.renderable != null || n.getComponentCount() != 0) {
-                    renderables.add(n);
-                } else if(n.emitsLight || n.isLocation || n.drawLines) {
+                if(scene.frustum.contains(n.bounds)) {
+                    if(n.renderable != null) {
+                        renderables.add(n);
+                    }
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        scene.root.traverse((n) -> {
+            if(n.visible) {
+                if(n.emitsLight || n.isLocation || n.drawLines) {
                     if(scene.isInDesign()) {
                         renderables.add(n);
                     }
@@ -122,9 +140,21 @@ public final class SceneRenderer extends Renderer {
         if(scene.brush != null) {
             scene.brush.traverse((n) -> {
                 if(n.visible) {
-                    if(n.renderable != null || n.getComponentCount() != 0) {
-                        renderables.add(n);
-                    } else if(n.emitsLight || n.isLocation || n.drawLines) {
+                    if(scene.frustum.contains(n.bounds)) {
+                        if(n.renderable != null) {
+                            renderables.add(n);
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
+
+        if(scene.brush != null) {
+            scene.brush.traverse((n) -> {
+                if(n.visible) {
+                    if(n.emitsLight || n.isLocation || n.drawLines) {
                         if(scene.isInDesign()) {
                             renderables.add(n);
                         }
@@ -174,7 +204,8 @@ public final class SceneRenderer extends Renderer {
             }
             if(node.renderable != null) {
                 trianglesRendered += node.renderable.render(scene, node, lights);
-            } else if((node.emitsLight || node.isLocation || node.drawLines) && scene.isInDesign()) {
+            }
+            if((node.emitsLight || node.isLocation || node.drawLines) && scene.isInDesign()) {
                 lineRenderer.begin(scene.projection, scene.view, matrix.toIdentity());
                 if(node.drawTreeLines) {
                     drawTreeLines(node, lineRenderer);
@@ -195,8 +226,8 @@ public final class SceneRenderer extends Renderer {
                 lineRenderer.push(p.x, p.y, p.z, 0, 1, 0, 1, p.x + u.x * 16, p.y + u.y * 16, p.z + u.z * 16, 0, 1, 0, 1);
                 lineRenderer.push(p.x, p.y, p.z, 0, 0, 1, 1, p.x + f.x * 16, p.y + f.y * 16, p.z + f.z * 16, 0, 0, 1, 1);
                 lineRenderer.end();
-            } else if(node == axis) {
-                float l = scene.calcOffset().length() / 6;
+            } else if(node == axis && scene.isInDesign()) {
+                float l = 32;
                 
                 lineRenderer.begin(scene.projection, scene.view, matrix.toIdentity().translate(scene.target));
                 lineRenderer.push(0, 0, 0, 1, 0, 0, 1, l, 0, 0, 1, 0, 0, 1);

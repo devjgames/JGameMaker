@@ -13,6 +13,7 @@ public final class Scene {
     public float zFar = 25000;
     public final Mat4 projection = new Mat4();
     public final Mat4 view = new Mat4();
+    public final Frustum frustum = new Frustum();
     public final SceneNode root = new SceneNode();
     public int snap = 1;
     public String canvasNode = "canvas";
@@ -63,6 +64,8 @@ public final class Scene {
         projection.toIdentity().perspective(fovDegrees, Game.getInstance().aspectRatio(), zNear, zFar);
         view.toIdentity().lookAt(eye, target, up);
         root.calcBoundsAndTransform();
+
+        frustum.calcPlanes(projection, view);
     }
 
     public void rotateAroundTarget(float dx, float dy) {
