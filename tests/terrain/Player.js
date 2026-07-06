@@ -6,32 +6,19 @@ var IO = org.game.IO;
 var Log = org.game.Log;
 var Controller = org.game.Controller;
 var Resource = org.game.Resource;
-var Keys = org.game.Keys;
 
 function create(me) {
 	me.properties.gravity = -2000;
 	me.properties.radius = 16;
 	me.properties.speed = 100;
-	me.properties.jump = 1200;
 	me.properties.controller = new Controller();
 	
 	me.propertyNames.add("speed");
 	me.propertyNames.add("gravity");
 	me.propertyNames.add("radius");
-	me.propertyNames.add("jump");
 }
 
 function init(me) {
-	if(!me.scene().isInDesign()) {
-		me.properties._error = false;
-		try {
-			me.properties._jump = game.getAssets().load(IO.file("jump.wav"));
-			me.properties._jump.setVolume(0.5);
-		} catch(error) {
-			me.properties._error = true;
-			Log.put(0, error);
-		}
-	}
 }
 
 function start(me) {
@@ -52,21 +39,7 @@ function update(me) {
 	if(me.scene().isInDesign()) {
 		return;
 	}
-	
-	if(game.keyDown(Keys.KEY_SPACE) && me.properties.controller.collider.isOnGround()) {
-		if(!me.properties._error) {
-			me.properties._jump.play(false);
-		}
-		me.properties.controller.collider.velocity.y = me.properties.jump;
-	}
-	
 	me.properties.controller.update(me.scene());
-	
-	me.properties._amount += 10 * game.elapsedTime();
-	if(me.properties._amount >= 1) {
-		me.properties._frame = (me.properties._frame + 1) % 12;
-		me.properties._amount = 0
-	}
 }
 
 function renderSprites(me, renderer) {

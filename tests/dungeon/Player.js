@@ -15,8 +15,6 @@ function create(me) {
 	me.properties.radius = 16;
 	me.properties.speed = 100;
 	me.properties.controller = new Controller();
-	me.properties._frame = 0
-	me.properties._amount = 0
 	me.properties._loadName = "";
 	
 	me.propertyNames.add("speed");
@@ -50,11 +48,6 @@ function update(me) {
 	}
 	me.properties.controller.update(me.scene());
 	
-	me.properties._amount += 10 * game.elapsedTime();
-	if(me.properties._amount >= 1) {
-		me.properties._frame = (me.properties._frame + 1) % 12;
-		me.properties._amount = 0
-	}
 	if(game.keyDown(Keys.KEY_SPACE)) {
 		if(!State.properties.get("down")) {
 			State.properties.put("down", true);
@@ -96,15 +89,8 @@ function renderSprites(me, renderer) {
 		"TRI = " + sceneRenderer.getTrianglesRendered() + "\n" +
 		"TST = " + me.properties.controller.collider.getTested() + "\n" +
 		"SPC = Next Scene",
-		8, 12, 100, 5, 10, 10, 1, 1, 1, 1
+		16, 16, 8, 5, 10, 10, 1, 1, 1, 1
 	);
-	if(!me.scene().isInDesign()) {
-		renderer.push(
-			me.properties._frame * 12, 12, 4, 1,
-			10, game.h() - 26, 16 * 4, 16,
-			1, 1, 1, 1, false
-		);
-	}
 	renderer.endSprite();
 }
 
