@@ -144,17 +144,17 @@ function update(me) {
 		p.startY = ss;
 		p.endX = 0.1;
 		p.endY = 0.1;
-		p.startR = 0.25;
-		p.startG = 0.25;
-		p.startB = 0.25;
+		p.startR = 1;
+		p.startG = 1;
+		p.startB = 1;
 		p.startA = sa;
-		p.endR = 0.25;
-		p.endG = 0.25;
-		p.endB = 0.25;
+		p.endR = 1;
+		p.endG = 1;
+		p.endB = 1;
 		p.endA = 0;
-		p.positionX = position.x + u.x * 5;
-		p.positionY = position.y + u.y * 5;
-		p.positionZ = position.z + u.z * 5;
+		p.positionX = position.x + u.x * ss * 0.5;
+		p.positionY = position.y + u.y * ss * 0.5;
+		p.positionZ = position.z + u.z * ss * 0.5;
 		p.lifeSpan = 0.5 + random.nextFloat() * 1.5;
 		
 		node.renderable.emit(p);

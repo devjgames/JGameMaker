@@ -47,6 +47,20 @@ public final class SceneRenderer extends Renderer {
 
         if(scene.brush != null) {
             scene.brush.calcBoundsAndTransform();
+            scene.brush.traverse((n) -> {
+                n.init();
+                return true;
+            });
+            scene.brush.calcBoundsAndTransform();
+            scene.brush.traverse((n) -> {
+                n.start();
+                return true;
+            });
+            scene.brush.traverse((n) -> {
+                n.update(scene);
+                return true;
+            });
+            scene.brush.calcBoundsAndTransform();
         }
 
         addNodes(scene);
