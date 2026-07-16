@@ -56,6 +56,7 @@ public final class SceneRenderer extends Renderer {
                 n.start();
                 return true;
             });
+            scene.brush.calcBoundsAndTransform();
             scene.brush.traverse((n) -> {
                 n.update(scene);
                 return true;
@@ -72,7 +73,7 @@ public final class SceneRenderer extends Renderer {
                 String s = n.getComponent(i).loadSceneName();
 
                 if(s != null) {
-                    scene.setLoadFile(IO.file(AssetManager.getRoot(), s + ".scn"));
+                    scene.setLoadFile(IO.file(AssetManager.getRoot(), s + ".scx"));
                 }
             }
             return true;

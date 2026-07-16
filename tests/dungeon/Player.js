@@ -175,7 +175,7 @@ function update(me) {
 				if(n == name) {
 					n = "scene" + (i + 1);
 					
-					var f = IO.file(AssetManager.getRoot(), n + ".scn");
+					var f = IO.file(AssetManager.getRoot(), n + ".scx");
 					
 					if(!f.exists()) {
 						n = "scene1";

@@ -16,6 +16,10 @@ public class UIButton {
     }
 
     void clicked(SceneNodeComponent component) {
-        click.onClick(component);
+        try {
+            click.onClick(component);
+        } catch(Exception ex) {
+            Log.put(0, ex);
+        }
     }
 }

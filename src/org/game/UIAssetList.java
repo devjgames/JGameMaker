@@ -168,25 +168,25 @@ class UIAssetList extends JList<String> {
         }));
         menu.add(items.get("Add JS"));
 
-        items.put("Add SCN", new JMenuItem(new AbstractAction("Add SCN") {
+        items.put("Add SCX", new JMenuItem(new AbstractAction("Add SCX") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String name = JOptionPane.showInputDialog("SCN File", "scene1.scn");
+                String name = JOptionPane.showInputDialog("SCX File", "scene1.scx");
 
                 if(name != null) {
                     try {
                         File file = IO.file(AssetManager.getRoot(), name);
 
-                        if(IO.getExtension(file).equals(".scn")) {
+                        if(IO.getExtension(file).equals(".scx")) {
                             if(!file.exists()) {
                                 IO.writeAllBytes("<scene/>".getBytes(), file);
                                 populate();
                                 enableUI();
                             } else {
-                                Log.put(0, ".scn file already exists");
+                                Log.put(0, ".scx file already exists");
                             }
                         } else {
-                            Log.put(0, "must have a .scn extension");
+                            Log.put(0, "must have a .scx extension");
                         }
                     } catch(Exception ex) {
                         Log.put(0, ex);
@@ -194,7 +194,7 @@ class UIAssetList extends JList<String> {
                 }
             }
         }));
-        menu.add(items.get("Add SCN"));
+        menu.add(items.get("Add SCX"));
 
         items.put("Delete", new JMenuItem(new AbstractAction("Delete") {
             @Override
@@ -226,7 +226,7 @@ class UIAssetList extends JList<String> {
                     } catch(Exception ex) {
                         Log.put(0, ex);
                     }
-                } else if(extension.equals(".scn")) {
+                } else if(extension.equals(".scx")) {
                     UIGameEditor.getInstance().loadScene(file);
                 } else {
                     JDialog dialog = new JDialog(UIGameEditor.getInstance());
@@ -354,7 +354,7 @@ class UIAssetList extends JList<String> {
                 enabled && (
                     extension.equals(".kfm") || 
                     extension.equals(".js") || 
-                    extension.equals(".scn") ||
+                    extension.equals(".scx") ||
                     extension.equals(".txt")
                     ));
         } else {
