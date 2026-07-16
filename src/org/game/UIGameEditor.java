@@ -238,6 +238,7 @@ class UIGameEditor extends JFrame implements GameLoop {
                             File file = chooser.getSelectedFile();
 
                             if(file.isDirectory()) {
+                                setTitle("JGameMaker");
                                 AssetManager.root = file;
                                 scene = null;
                                 tree.populate();
@@ -391,13 +392,13 @@ class UIGameEditor extends JFrame implements GameLoop {
                 scene.brush = null;
 
                 if(isPlaying) {
+                    File file = scene.file;
+
                     scene = Scene.next(scene);
 
-                    if(game.keyDown(Keys.KEY_ESCAPE)) {
+                    if(game.keyDown(Keys.KEY_ESCAPE) || scene == null) {
                         game.setMouseGrabbed(false);
                         try {
-                            File file = scene.file;
-
                             game.getAssets().clear();
                             scene = null;
                             scene = SceneSerializer.deserialize(true, file);
@@ -445,6 +446,16 @@ class UIGameEditor extends JFrame implements GameLoop {
                 }
             } catch(Exception ex) {
                 Log.put(0, ex);
+
+                scene = null;
+                game.getAssets().clear();
+
+                setTitle("JGameMaker");
+                isPlaying = false;
+                tree.populate();
+                enableUI();
+
+                State.properties.clear();
             }
         }
     }

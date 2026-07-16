@@ -158,14 +158,12 @@ public final class Scene {
         Game game = Game.getInstance();
 
         if(f != null) {
-            if(f.exists()) {
-                try {
-                    scene = null;
-                    game.getAssets().clear();
-                    scene = SceneSerializer.deserialize(false, f);
-                } catch(Exception ex) {
-                    Log.put(0, ex);
-                }
+            try {
+                scene = null;
+                game.getAssets().clear();
+                scene = SceneSerializer.deserialize(false, f);
+            } catch(Exception ex) {
+                Log.put(0, ex);
             }
         }
         return scene;
