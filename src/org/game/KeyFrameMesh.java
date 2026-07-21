@@ -263,13 +263,13 @@ public final class KeyFrameMesh implements Renderable {
         triangle.p1.y = f1y1 + amount * (f2y1 - f1y1);
         triangle.p1.z = f1z1 + amount * (f2z1 - f1z1);
 
-        triangle.p2.x = f1x2 + amount * (f2x2 - f1x2);
-        triangle.p2.y = f1y2 + amount * (f2y2 - f1y2);
-        triangle.p2.z = f1z2 + amount * (f2z2 - f1z2);
+        triangle.p3.x = f1x2 + amount * (f2x2 - f1x2);
+        triangle.p3.y = f1y2 + amount * (f2y2 - f1y2);
+        triangle.p3.z = f1z2 + amount * (f2z2 - f1z2);
 
-        triangle.p3.x = f1x3 + amount * (f2x3 - f1x3);
-        triangle.p3.y = f1y3 + amount * (f2y3 - f1y3);
-        triangle.p3.z = f1z3 + amount * (f2z3 - f1z3);
+        triangle.p2.x = f1x3 + amount * (f2x3 - f1x3);
+        triangle.p2.y = f1y3 + amount * (f2y3 - f1y3);
+        triangle.p2.z = f1z3 + amount * (f2z3 - f1z3);
 
         return triangle.calcPlane();
     }
