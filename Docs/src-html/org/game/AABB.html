@@ -1,0 +1,278 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css" title="Style">
+</head>
+<body>
+<main role="main">
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span><a id="line.1">package org.game;</a>
+<span class="sourceLineNo">002</span><a id="line.2"></a>
+<span class="sourceLineNo">003</span><a id="line.3">public final class AABB {</a>
+<span class="sourceLineNo">004</span><a id="line.4">    </a>
+<span class="sourceLineNo">005</span><a id="line.5">    public final Vec3 min = new Vec3();</a>
+<span class="sourceLineNo">006</span><a id="line.6">    public final Vec3 max = new Vec3();</a>
+<span class="sourceLineNo">007</span><a id="line.7"></a>
+<span class="sourceLineNo">008</span><a id="line.8">    public AABB() {</a>
+<span class="sourceLineNo">009</span><a id="line.9">        clear();</a>
+<span class="sourceLineNo">010</span><a id="line.10">    }</a>
+<span class="sourceLineNo">011</span><a id="line.11"></a>
+<span class="sourceLineNo">012</span><a id="line.12">    public AABB(float x1, float y1, float z1, float x2, float y2, float z2) {</a>
+<span class="sourceLineNo">013</span><a id="line.13">        set(x1, y1, z1, x2, y2, z2);</a>
+<span class="sourceLineNo">014</span><a id="line.14">    }</a>
+<span class="sourceLineNo">015</span><a id="line.15"></a>
+<span class="sourceLineNo">016</span><a id="line.16">    public AABB(Vec3 min, Vec3 max) {</a>
+<span class="sourceLineNo">017</span><a id="line.17">        set(min, max);</a>
+<span class="sourceLineNo">018</span><a id="line.18">    }</a>
+<span class="sourceLineNo">019</span><a id="line.19"></a>
+<span class="sourceLineNo">020</span><a id="line.20">    public AABB(AABB b) {</a>
+<span class="sourceLineNo">021</span><a id="line.21">        set(b);</a>
+<span class="sourceLineNo">022</span><a id="line.22">    }</a>
+<span class="sourceLineNo">023</span><a id="line.23"></a>
+<span class="sourceLineNo">024</span><a id="line.24">    public boolean isEmpty() {</a>
+<span class="sourceLineNo">025</span><a id="line.25">        return min.x &gt; max.x || min.y &gt; max.y || min.z &gt; max.z;</a>
+<span class="sourceLineNo">026</span><a id="line.26">    }</a>
+<span class="sourceLineNo">027</span><a id="line.27"></a>
+<span class="sourceLineNo">028</span><a id="line.28">    public boolean contains(float x, float y, float z) {</a>
+<span class="sourceLineNo">029</span><a id="line.29">        if(!isEmpty()) {</a>
+<span class="sourceLineNo">030</span><a id="line.30">            return x &gt;= min.x &amp;&amp; x &lt;= max.x &amp;&amp; y &gt;= min.y &amp;&amp; y &lt;= max.y &amp;&amp; z &gt;= min.z &amp;&amp; z &lt;= max.z;</a>
+<span class="sourceLineNo">031</span><a id="line.31">        }</a>
+<span class="sourceLineNo">032</span><a id="line.32">        return false;</a>
+<span class="sourceLineNo">033</span><a id="line.33">    }</a>
+<span class="sourceLineNo">034</span><a id="line.34"></a>
+<span class="sourceLineNo">035</span><a id="line.35">    public boolean contains(Vec3 point) {</a>
+<span class="sourceLineNo">036</span><a id="line.36">        return contains(point.x, point.y, point.z);</a>
+<span class="sourceLineNo">037</span><a id="line.37">    }</a>
+<span class="sourceLineNo">038</span><a id="line.38"></a>
+<span class="sourceLineNo">039</span><a id="line.39">    public boolean touches(AABB b) {</a>
+<span class="sourceLineNo">040</span><a id="line.40">        if(!isEmpty() &amp;&amp; !b.isEmpty()) {</a>
+<span class="sourceLineNo">041</span><a id="line.41">            return !(</a>
+<span class="sourceLineNo">042</span><a id="line.42">                b.min.x &gt; max.x || b.max.x &lt; min.x ||</a>
+<span class="sourceLineNo">043</span><a id="line.43">                b.min.y &gt; max.y || b.max.y &lt; min.y ||</a>
+<span class="sourceLineNo">044</span><a id="line.44">                b.min.z &gt; max.z || b.max.z &lt; min.z</a>
+<span class="sourceLineNo">045</span><a id="line.45">            );</a>
+<span class="sourceLineNo">046</span><a id="line.46">        }</a>
+<span class="sourceLineNo">047</span><a id="line.47">        return false;</a>
+<span class="sourceLineNo">048</span><a id="line.48">    }</a>
+<span class="sourceLineNo">049</span><a id="line.49"></a>
+<span class="sourceLineNo">050</span><a id="line.50">    public Vec3 center(Vec3 center) {</a>
+<span class="sourceLineNo">051</span><a id="line.51">        return max.add(min, center).div(2);</a>
+<span class="sourceLineNo">052</span><a id="line.52">    }</a>
+<span class="sourceLineNo">053</span><a id="line.53"></a>
+<span class="sourceLineNo">054</span><a id="line.54">    public Vec3 size(Vec3 size) {</a>
+<span class="sourceLineNo">055</span><a id="line.55">        return max.sub(min, size);</a>
+<span class="sourceLineNo">056</span><a id="line.56">    }</a>
+<span class="sourceLineNo">057</span><a id="line.57"></a>
+<span class="sourceLineNo">058</span><a id="line.58">    public AABB clear() {</a>
+<span class="sourceLineNo">059</span><a id="line.59">        min.set(1, 1, 1).scale(Float.MAX_VALUE);</a>
+<span class="sourceLineNo">060</span><a id="line.60">        min.negate(max);</a>
+<span class="sourceLineNo">061</span><a id="line.61"></a>
+<span class="sourceLineNo">062</span><a id="line.62">        return this;</a>
+<span class="sourceLineNo">063</span><a id="line.63">    }</a>
+<span class="sourceLineNo">064</span><a id="line.64"></a>
+<span class="sourceLineNo">065</span><a id="line.65">    public AABB set(float x1, float y1, float z1, float x2, float y2, float z2) {</a>
+<span class="sourceLineNo">066</span><a id="line.66">        min.set(x1, y1, z1);</a>
+<span class="sourceLineNo">067</span><a id="line.67">        max.set(x2, y2, z2);</a>
+<span class="sourceLineNo">068</span><a id="line.68"></a>
+<span class="sourceLineNo">069</span><a id="line.69">        return this;</a>
+<span class="sourceLineNo">070</span><a id="line.70">    }</a>
+<span class="sourceLineNo">071</span><a id="line.71"></a>
+<span class="sourceLineNo">072</span><a id="line.72">    public AABB set(Vec3 min, Vec3 max) {</a>
+<span class="sourceLineNo">073</span><a id="line.73">        this.min.set(min);</a>
+<span class="sourceLineNo">074</span><a id="line.74">        this.max.set(max);</a>
+<span class="sourceLineNo">075</span><a id="line.75"></a>
+<span class="sourceLineNo">076</span><a id="line.76">        return this;</a>
+<span class="sourceLineNo">077</span><a id="line.77">    }</a>
+<span class="sourceLineNo">078</span><a id="line.78"></a>
+<span class="sourceLineNo">079</span><a id="line.79">    public AABB set(AABB b) {</a>
+<span class="sourceLineNo">080</span><a id="line.80">        min.set(b.min);</a>
+<span class="sourceLineNo">081</span><a id="line.81">        max.set(b.max);</a>
+<span class="sourceLineNo">082</span><a id="line.82"></a>
+<span class="sourceLineNo">083</span><a id="line.83">        return this;</a>
+<span class="sourceLineNo">084</span><a id="line.84">    }</a>
+<span class="sourceLineNo">085</span><a id="line.85"></a>
+<span class="sourceLineNo">086</span><a id="line.86">    public AABB buffer(float x, float y, float z) {</a>
+<span class="sourceLineNo">087</span><a id="line.87">        if(!isEmpty()) {</a>
+<span class="sourceLineNo">088</span><a id="line.88">            min.sub(x, y, z);</a>
+<span class="sourceLineNo">089</span><a id="line.89">            max.add(x, y, z);</a>
+<span class="sourceLineNo">090</span><a id="line.90">        }</a>
+<span class="sourceLineNo">091</span><a id="line.91">        return this;</a>
+<span class="sourceLineNo">092</span><a id="line.92">    }</a>
+<span class="sourceLineNo">093</span><a id="line.93"></a>
+<span class="sourceLineNo">094</span><a id="line.94">    public AABB buffer(Vec3 amount) {</a>
+<span class="sourceLineNo">095</span><a id="line.95">        return buffer(amount.x, amount.y, amount.z);</a>
+<span class="sourceLineNo">096</span><a id="line.96">    }</a>
+<span class="sourceLineNo">097</span><a id="line.97">    </a>
+<span class="sourceLineNo">098</span><a id="line.98">    public AABB add(float x, float y, float z) {</a>
+<span class="sourceLineNo">099</span><a id="line.99">        min.x = Math.min(x, min.x);</a>
+<span class="sourceLineNo">100</span><a id="line.100">        min.y = Math.min(y, min.y);</a>
+<span class="sourceLineNo">101</span><a id="line.101">        min.z = Math.min(z, min.z);</a>
+<span class="sourceLineNo">102</span><a id="line.102">        max.x = Math.max(x, max.x);</a>
+<span class="sourceLineNo">103</span><a id="line.103">        max.y = Math.max(y, max.y);</a>
+<span class="sourceLineNo">104</span><a id="line.104">        max.z = Math.max(z, max.z);</a>
+<span class="sourceLineNo">105</span><a id="line.105"></a>
+<span class="sourceLineNo">106</span><a id="line.106">        return this;</a>
+<span class="sourceLineNo">107</span><a id="line.107">    }</a>
+<span class="sourceLineNo">108</span><a id="line.108"></a>
+<span class="sourceLineNo">109</span><a id="line.109">    public AABB add(Vec3 point) {</a>
+<span class="sourceLineNo">110</span><a id="line.110">        return add(point.x, point.y, point.z);</a>
+<span class="sourceLineNo">111</span><a id="line.111">    }</a>
+<span class="sourceLineNo">112</span><a id="line.112"></a>
+<span class="sourceLineNo">113</span><a id="line.113">    public AABB add(AABB b) {</a>
+<span class="sourceLineNo">114</span><a id="line.114">        if(!b.isEmpty()) {</a>
+<span class="sourceLineNo">115</span><a id="line.115">            add(b.min);</a>
+<span class="sourceLineNo">116</span><a id="line.116">            add(b.max);</a>
+<span class="sourceLineNo">117</span><a id="line.117">        }</a>
+<span class="sourceLineNo">118</span><a id="line.118">        return this;</a>
+<span class="sourceLineNo">119</span><a id="line.119">    }</a>
+<span class="sourceLineNo">120</span><a id="line.120"></a>
+<span class="sourceLineNo">121</span><a id="line.121">    public AABB transform(Mat4 m) {</a>
+<span class="sourceLineNo">122</span><a id="line.122">        if(!isEmpty()) {</a>
+<span class="sourceLineNo">123</span><a id="line.123">            float minx = m.m03;</a>
+<span class="sourceLineNo">124</span><a id="line.124">            float miny = m.m13;</a>
+<span class="sourceLineNo">125</span><a id="line.125">            float minz = m.m23;</a>
+<span class="sourceLineNo">126</span><a id="line.126">            float maxx = minx;</a>
+<span class="sourceLineNo">127</span><a id="line.127">            float maxy = miny;</a>
+<span class="sourceLineNo">128</span><a id="line.128">            float maxz = minz;</a>
+<span class="sourceLineNo">129</span><a id="line.129"></a>
+<span class="sourceLineNo">130</span><a id="line.130">            minx += (m.m00 &lt; 0) ? m.m00 * max.x : m.m00 * min.x;</a>
+<span class="sourceLineNo">131</span><a id="line.131">            minx += (m.m01 &lt; 0) ? m.m01 * max.y : m.m01 * min.y;</a>
+<span class="sourceLineNo">132</span><a id="line.132">            minx += (m.m02 &lt; 0) ? m.m02 * max.z : m.m02 * min.z;</a>
+<span class="sourceLineNo">133</span><a id="line.133">            maxx += (m.m00 &gt; 0) ? m.m00 * max.x : m.m00 * min.x;</a>
+<span class="sourceLineNo">134</span><a id="line.134">            maxx += (m.m01 &gt; 0) ? m.m01 * max.y : m.m01 * min.y;</a>
+<span class="sourceLineNo">135</span><a id="line.135">            maxx += (m.m02 &gt; 0) ? m.m02 * max.z : m.m02 * min.z;</a>
+<span class="sourceLineNo">136</span><a id="line.136"></a>
+<span class="sourceLineNo">137</span><a id="line.137">            miny += (m.m10 &lt; 0) ? m.m10 * max.x : m.m10 * min.x;</a>
+<span class="sourceLineNo">138</span><a id="line.138">            miny += (m.m11 &lt; 0) ? m.m11 * max.y : m.m11 * min.y;</a>
+<span class="sourceLineNo">139</span><a id="line.139">            miny += (m.m12 &lt; 0) ? m.m12 * max.z : m.m12 * min.z;</a>
+<span class="sourceLineNo">140</span><a id="line.140">            maxy += (m.m10 &gt; 0) ? m.m10 * max.x : m.m10 * min.x;</a>
+<span class="sourceLineNo">141</span><a id="line.141">            maxy += (m.m11 &gt; 0) ? m.m11 * max.y : m.m11 * min.y;</a>
+<span class="sourceLineNo">142</span><a id="line.142">            maxy += (m.m12 &gt; 0) ? m.m12 * max.z : m.m12 * min.z;</a>
+<span class="sourceLineNo">143</span><a id="line.143"></a>
+<span class="sourceLineNo">144</span><a id="line.144">            minz += (m.m20 &lt; 0) ? m.m20 * max.x : m.m20 * min.x;</a>
+<span class="sourceLineNo">145</span><a id="line.145">            minz += (m.m21 &lt; 0) ? m.m21 * max.y : m.m21 * min.y;</a>
+<span class="sourceLineNo">146</span><a id="line.146">            minz += (m.m22 &lt; 0) ? m.m22 * max.z : m.m22 * min.z;</a>
+<span class="sourceLineNo">147</span><a id="line.147">            maxz += (m.m20 &gt; 0) ? m.m20 * max.x : m.m20 * min.x;</a>
+<span class="sourceLineNo">148</span><a id="line.148">            maxz += (m.m21 &gt; 0) ? m.m21 * max.y : m.m21 * min.y;</a>
+<span class="sourceLineNo">149</span><a id="line.149">            maxz += (m.m22 &gt; 0) ? m.m22 * max.z : m.m22 * min.z;</a>
+<span class="sourceLineNo">150</span><a id="line.150">            </a>
+<span class="sourceLineNo">151</span><a id="line.151">            set(minx, miny, minz, maxx, maxy, maxz);</a>
+<span class="sourceLineNo">152</span><a id="line.152">        }</a>
+<span class="sourceLineNo">153</span><a id="line.153">        return this;</a>
+<span class="sourceLineNo">154</span><a id="line.154">    }</a>
+<span class="sourceLineNo">155</span><a id="line.155"></a>
+<span class="sourceLineNo">156</span><a id="line.156">    public boolean isects(Vec3 origin, Vec3 direction, float[] time) {</a>
+<span class="sourceLineNo">157</span><a id="line.157">        float tnear = -Float.MAX_VALUE;</a>
+<span class="sourceLineNo">158</span><a id="line.158">        float tfar = Float.MAX_VALUE;</a>
+<span class="sourceLineNo">159</span><a id="line.159"></a>
+<span class="sourceLineNo">160</span><a id="line.160">        for(int i = 0; i != 3; i++) {</a>
+<span class="sourceLineNo">161</span><a id="line.161">            if(Math.abs(direction.component(i)) &lt; 0.0000001) {</a>
+<span class="sourceLineNo">162</span><a id="line.162">                if(origin.component(i) &lt; min.component(i) || origin.component(i) &gt; max.component(i)) {</a>
+<span class="sourceLineNo">163</span><a id="line.163">                    return false;</a>
+<span class="sourceLineNo">164</span><a id="line.164">                }</a>
+<span class="sourceLineNo">165</span><a id="line.165">            } else {</a>
+<span class="sourceLineNo">166</span><a id="line.166">                float t1 = (min.component(i) - origin.component(i)) / direction.component(i);</a>
+<span class="sourceLineNo">167</span><a id="line.167">                float t2 = (max.component(i) - origin.component(i)) / direction.component(i);</a>
+<span class="sourceLineNo">168</span><a id="line.168">                </a>
+<span class="sourceLineNo">169</span><a id="line.169">                if(t1 &gt; t2) {</a>
+<span class="sourceLineNo">170</span><a id="line.170">                    float temp = t1;</a>
+<span class="sourceLineNo">171</span><a id="line.171">                    t1 = t2;</a>
+<span class="sourceLineNo">172</span><a id="line.172">                    t2 = temp;</a>
+<span class="sourceLineNo">173</span><a id="line.173">                }</a>
+<span class="sourceLineNo">174</span><a id="line.174">                if(t1 &gt; tnear) {</a>
+<span class="sourceLineNo">175</span><a id="line.175">                    tnear = t1;</a>
+<span class="sourceLineNo">176</span><a id="line.176">                }</a>
+<span class="sourceLineNo">177</span><a id="line.177">                if(t2 &lt; tfar) {</a>
+<span class="sourceLineNo">178</span><a id="line.178">                    tfar = t2;</a>
+<span class="sourceLineNo">179</span><a id="line.179">                }</a>
+<span class="sourceLineNo">180</span><a id="line.180">                if(tnear &gt; tfar) {</a>
+<span class="sourceLineNo">181</span><a id="line.181">                    return false;</a>
+<span class="sourceLineNo">182</span><a id="line.182">                }</a>
+<span class="sourceLineNo">183</span><a id="line.183">                if(tfar &lt; 0) {</a>
+<span class="sourceLineNo">184</span><a id="line.184">                    return false;</a>
+<span class="sourceLineNo">185</span><a id="line.185">                }</a>
+<span class="sourceLineNo">186</span><a id="line.186">            }</a>
+<span class="sourceLineNo">187</span><a id="line.187">        }</a>
+<span class="sourceLineNo">188</span><a id="line.188">        if(tnear &gt; 0) {</a>
+<span class="sourceLineNo">189</span><a id="line.189">            if(tnear &lt; time[0]) {</a>
+<span class="sourceLineNo">190</span><a id="line.190">                time[0] = tnear;</a>
+<span class="sourceLineNo">191</span><a id="line.191">                return true;</a>
+<span class="sourceLineNo">192</span><a id="line.192">            }</a>
+<span class="sourceLineNo">193</span><a id="line.193">        } else if(tfar &lt; time[0]) {</a>
+<span class="sourceLineNo">194</span><a id="line.194">            time[0] = tfar;</a>
+<span class="sourceLineNo">195</span><a id="line.195">            return true;</a>
+<span class="sourceLineNo">196</span><a id="line.196">        }</a>
+<span class="sourceLineNo">197</span><a id="line.197">        return false;</a>
+<span class="sourceLineNo">198</span><a id="line.198">    }</a>
+<span class="sourceLineNo">199</span><a id="line.199"></a>
+<span class="sourceLineNo">200</span><a id="line.200">    @Override</a>
+<span class="sourceLineNo">201</span><a id="line.201">    public String toString() {</a>
+<span class="sourceLineNo">202</span><a id="line.202">        return min + " -&gt; " + max;</a>
+<span class="sourceLineNo">203</span><a id="line.203">    }</a>
+<span class="sourceLineNo">204</span><a id="line.204">}</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</main>
+</body>
+</html>

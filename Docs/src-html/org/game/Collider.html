@@ -1,0 +1,303 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css" title="Style">
+</head>
+<body>
+<main role="main">
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span><a id="line.1">package org.game;</a>
+<span class="sourceLineNo">002</span><a id="line.2"></a>
+<span class="sourceLineNo">003</span><a id="line.3">import java.util.Vector;</a>
+<span class="sourceLineNo">004</span><a id="line.4"></a>
+<span class="sourceLineNo">005</span><a id="line.5">public final class Collider {</a>
+<span class="sourceLineNo">006</span><a id="line.6">    </a>
+<span class="sourceLineNo">007</span><a id="line.7">    public float radius = 16;</a>
+<span class="sourceLineNo">008</span><a id="line.8">    public int groundSlope = 60;</a>
+<span class="sourceLineNo">009</span><a id="line.9">    public int roofSlope = 50;</a>
+<span class="sourceLineNo">010</span><a id="line.10">    public final Vec3 velocity = new Vec3();</a>
+<span class="sourceLineNo">011</span><a id="line.11"></a>
+<span class="sourceLineNo">012</span><a id="line.12">    private int tested = 0;</a>
+<span class="sourceLineNo">013</span><a id="line.13">    private final Vec3 f = new Vec3();</a>
+<span class="sourceLineNo">014</span><a id="line.14">    private final Vec3 u = new Vec3();</a>
+<span class="sourceLineNo">015</span><a id="line.15">    private final Vec3 r = new Vec3();</a>
+<span class="sourceLineNo">016</span><a id="line.16">    private final Vec3 o = new Vec3();</a>
+<span class="sourceLineNo">017</span><a id="line.17">    private final Vec3 d = new Vec3();</a>
+<span class="sourceLineNo">018</span><a id="line.18">    private final Vec3 p = new Vec3();</a>
+<span class="sourceLineNo">019</span><a id="line.19">    private final Vec3 c = new Vec3();</a>
+<span class="sourceLineNo">020</span><a id="line.20">    private final AABB bounds = new AABB();</a>
+<span class="sourceLineNo">021</span><a id="line.21">    private final Triangle triangle = new Triangle();</a>
+<span class="sourceLineNo">022</span><a id="line.22">    private boolean onGround = false;</a>
+<span class="sourceLineNo">023</span><a id="line.23">    private boolean hitRoof = false;</a>
+<span class="sourceLineNo">024</span><a id="line.24">    private final Mat4 groundMatrix = new Mat4();</a>
+<span class="sourceLineNo">025</span><a id="line.25">    private final Vec3 delta = new Vec3();</a>
+<span class="sourceLineNo">026</span><a id="line.26">    private final Vec3 hNormal = new Vec3();</a>
+<span class="sourceLineNo">027</span><a id="line.27">    private final Vec3 groundNormal = new Vec3();</a>
+<span class="sourceLineNo">028</span><a id="line.28">    private final Triangle hTriangle = new Triangle();</a>
+<span class="sourceLineNo">029</span><a id="line.29">    private SceneNode hNode = null;</a>
+<span class="sourceLineNo">030</span><a id="line.30">    private final Vec3 rPosition = new Vec3();</a>
+<span class="sourceLineNo">031</span><a id="line.31">    private final float[] time = new float[1];</a>
+<span class="sourceLineNo">032</span><a id="line.32">    private final Vector&lt;SceneNode&gt; hitNodes = new Vector&lt;&gt;();</a>
+<span class="sourceLineNo">033</span><a id="line.33"></a>
+<span class="sourceLineNo">034</span><a id="line.34">    public int getHitNodeCount() {</a>
+<span class="sourceLineNo">035</span><a id="line.35">        return hitNodes.size();</a>
+<span class="sourceLineNo">036</span><a id="line.36">    }</a>
+<span class="sourceLineNo">037</span><a id="line.37"></a>
+<span class="sourceLineNo">038</span><a id="line.38">    public SceneNode getHitNode(int i) {</a>
+<span class="sourceLineNo">039</span><a id="line.39">        return hitNodes.get(i);</a>
+<span class="sourceLineNo">040</span><a id="line.40">    }</a>
+<span class="sourceLineNo">041</span><a id="line.41"></a>
+<span class="sourceLineNo">042</span><a id="line.42">    public boolean isOnGround() {</a>
+<span class="sourceLineNo">043</span><a id="line.43">        return onGround;</a>
+<span class="sourceLineNo">044</span><a id="line.44">    }</a>
+<span class="sourceLineNo">045</span><a id="line.45"></a>
+<span class="sourceLineNo">046</span><a id="line.46">    public boolean didHitRoof() {</a>
+<span class="sourceLineNo">047</span><a id="line.47">        return hitRoof;</a>
+<span class="sourceLineNo">048</span><a id="line.48">    }</a>
+<span class="sourceLineNo">049</span><a id="line.49"></a>
+<span class="sourceLineNo">050</span><a id="line.50">    public int getTested() {</a>
+<span class="sourceLineNo">051</span><a id="line.51">        return tested;</a>
+<span class="sourceLineNo">052</span><a id="line.52">    }</a>
+<span class="sourceLineNo">053</span><a id="line.53"></a>
+<span class="sourceLineNo">054</span><a id="line.54">    public boolean intersect(Scene scene, SceneNode root, Vec3 origin, Vec3 direction, float buffer, int mask, float[] time, boolean ignoreBackfaces, Triangle hit) throws Exception {</a>
+<span class="sourceLineNo">055</span><a id="line.55">        hNode = null;</a>
+<span class="sourceLineNo">056</span><a id="line.56">        root.traverse((n) -&gt; {</a>
+<span class="sourceLineNo">057</span><a id="line.57">            bounds.clear();</a>
+<span class="sourceLineNo">058</span><a id="line.58">            bounds.add(origin);</a>
+<span class="sourceLineNo">059</span><a id="line.59">            bounds.add(direction.scale(time[0], f).add(origin));</a>
+<span class="sourceLineNo">060</span><a id="line.60">            if(n.bounds.touches(bounds)) {</a>
+<span class="sourceLineNo">061</span><a id="line.61">                if(n.collidable) {</a>
+<span class="sourceLineNo">062</span><a id="line.62">                    OctTree octTree = n.getOctTree(scene);</a>
+<span class="sourceLineNo">063</span><a id="line.63"></a>
+<span class="sourceLineNo">064</span><a id="line.64">                    if(octTree != null) {</a>
+<span class="sourceLineNo">065</span><a id="line.65">                        octTree.traverse((t) -&gt; {</a>
+<span class="sourceLineNo">066</span><a id="line.66">                            if(t.getBounds().touches(bounds)) {</a>
+<span class="sourceLineNo">067</span><a id="line.67">                                for(int i = 0; i != t.getTriangleCount(); i++) {</a>
+<span class="sourceLineNo">068</span><a id="line.68">                                    t.getTriangle(i, triangle);</a>
+<span class="sourceLineNo">069</span><a id="line.69">                                    if((triangle.tag &amp; mask) != 0) {</a>
+<span class="sourceLineNo">070</span><a id="line.70">                                        boolean skip = ignoreBackfaces;</a>
+<span class="sourceLineNo">071</span><a id="line.71">                                        </a>
+<span class="sourceLineNo">072</span><a id="line.72">                                        if(skip) {</a>
+<span class="sourceLineNo">073</span><a id="line.73">                                            skip = triangle.n.dot(direction) &gt; 0;</a>
+<span class="sourceLineNo">074</span><a id="line.74">                                        }</a>
+<span class="sourceLineNo">075</span><a id="line.75">                                        if(!skip) {</a>
+<span class="sourceLineNo">076</span><a id="line.76">                                            if(triangle.intersects(origin, direction, buffer, time)) {;</a>
+<span class="sourceLineNo">077</span><a id="line.77">                                                hit.set(triangle);</a>
+<span class="sourceLineNo">078</span><a id="line.78">                                                hNode = n;</a>
+<span class="sourceLineNo">079</span><a id="line.79">                                            }</a>
+<span class="sourceLineNo">080</span><a id="line.80">                                        }</a>
+<span class="sourceLineNo">081</span><a id="line.81">                                    }</a>
+<span class="sourceLineNo">082</span><a id="line.82">                                }</a>
+<span class="sourceLineNo">083</span><a id="line.83">                                return true;</a>
+<span class="sourceLineNo">084</span><a id="line.84">                            }</a>
+<span class="sourceLineNo">085</span><a id="line.85">                            return false;</a>
+<span class="sourceLineNo">086</span><a id="line.86">                        });</a>
+<span class="sourceLineNo">087</span><a id="line.87">                    } else {</a>
+<span class="sourceLineNo">088</span><a id="line.88">                        for(int i = 0; i != n.getTriangleCount(); i++) {</a>
+<span class="sourceLineNo">089</span><a id="line.89">                            n.getTriangle(scene, i, triangle);</a>
+<span class="sourceLineNo">090</span><a id="line.90">                            if((triangle.tag &amp; mask) != 0) {</a>
+<span class="sourceLineNo">091</span><a id="line.91">                                boolean skip = ignoreBackfaces;</a>
+<span class="sourceLineNo">092</span><a id="line.92">                                        </a>
+<span class="sourceLineNo">093</span><a id="line.93">                                if(skip) {</a>
+<span class="sourceLineNo">094</span><a id="line.94">                                    skip = triangle.n.dot(direction) &gt; 0;</a>
+<span class="sourceLineNo">095</span><a id="line.95">                                }</a>
+<span class="sourceLineNo">096</span><a id="line.96">                                if(!skip) {</a>
+<span class="sourceLineNo">097</span><a id="line.97">                                    if(triangle.intersects(origin, direction, buffer, time)) {</a>
+<span class="sourceLineNo">098</span><a id="line.98">                                        hit.set(triangle);</a>
+<span class="sourceLineNo">099</span><a id="line.99">                                        hNode = n;</a>
+<span class="sourceLineNo">100</span><a id="line.100">                                    }</a>
+<span class="sourceLineNo">101</span><a id="line.101">                                }</a>
+<span class="sourceLineNo">102</span><a id="line.102">                            }</a>
+<span class="sourceLineNo">103</span><a id="line.103">                        }</a>
+<span class="sourceLineNo">104</span><a id="line.104">                    }</a>
+<span class="sourceLineNo">105</span><a id="line.105">                }</a>
+<span class="sourceLineNo">106</span><a id="line.106">                return true;</a>
+<span class="sourceLineNo">107</span><a id="line.107">            }</a>
+<span class="sourceLineNo">108</span><a id="line.108">            return false;</a>
+<span class="sourceLineNo">109</span><a id="line.109">        });</a>
+<span class="sourceLineNo">110</span><a id="line.110">        hitNodes.clear();</a>
+<span class="sourceLineNo">111</span><a id="line.111">        if(hNode != null) {</a>
+<span class="sourceLineNo">112</span><a id="line.112">            hitNodes.add(hNode);</a>
+<span class="sourceLineNo">113</span><a id="line.113">        }</a>
+<span class="sourceLineNo">114</span><a id="line.114">        return hNode != null;</a>
+<span class="sourceLineNo">115</span><a id="line.115">    }</a>
+<span class="sourceLineNo">116</span><a id="line.116"></a>
+<span class="sourceLineNo">117</span><a id="line.117">    public boolean resolve(Scene scene, SceneNode root, Vec3 position) throws Exception {</a>
+<span class="sourceLineNo">118</span><a id="line.118">        boolean collided = false;</a>
+<span class="sourceLineNo">119</span><a id="line.119"></a>
+<span class="sourceLineNo">120</span><a id="line.120">        hitNodes.clear();</a>
+<span class="sourceLineNo">121</span><a id="line.121"></a>
+<span class="sourceLineNo">122</span><a id="line.122">        velocity.scale(Game.getInstance().elapsedTime(), delta);</a>
+<span class="sourceLineNo">123</span><a id="line.123">        if(delta.length() &gt; radius * 0.5f) {</a>
+<span class="sourceLineNo">124</span><a id="line.124">            delta.normalize(radius * 0.5f);</a>
+<span class="sourceLineNo">125</span><a id="line.125">        }</a>
+<span class="sourceLineNo">126</span><a id="line.126">        groundMatrix.transformNormal(delta);</a>
+<span class="sourceLineNo">127</span><a id="line.127">        position.add(delta);</a>
+<span class="sourceLineNo">128</span><a id="line.128">        groundMatrix.toIdentity();</a>
+<span class="sourceLineNo">129</span><a id="line.129">        onGround = false;</a>
+<span class="sourceLineNo">130</span><a id="line.130">        groundNormal.toZero();</a>
+<span class="sourceLineNo">131</span><a id="line.131">        tested = 0;</a>
+<span class="sourceLineNo">132</span><a id="line.132">        for(int i = 0; i != 3; i++) {</a>
+<span class="sourceLineNo">133</span><a id="line.133">            hNode = null;</a>
+<span class="sourceLineNo">134</span><a id="line.134">            hNormal.toZero();</a>
+<span class="sourceLineNo">135</span><a id="line.135">            bounds.min.set(position).sub(radius, radius, radius);</a>
+<span class="sourceLineNo">136</span><a id="line.136">            bounds.max.set(position).add(radius, radius, radius);</a>
+<span class="sourceLineNo">137</span><a id="line.137">            time[0] = radius;</a>
+<span class="sourceLineNo">138</span><a id="line.138">            root.traverse((n) -&gt; {</a>
+<span class="sourceLineNo">139</span><a id="line.139">                if(n.bounds.touches(bounds)) {</a>
+<span class="sourceLineNo">140</span><a id="line.140">                    if(n.collidable) {</a>
+<span class="sourceLineNo">141</span><a id="line.141">                        OctTree tree = n.getOctTree(scene);</a>
+<span class="sourceLineNo">142</span><a id="line.142"></a>
+<span class="sourceLineNo">143</span><a id="line.143">                        if(tree != null) {</a>
+<span class="sourceLineNo">144</span><a id="line.144">                            tree.traverse((t) -&gt; {</a>
+<span class="sourceLineNo">145</span><a id="line.145">                                if(t.getBounds().touches(bounds)) {</a>
+<span class="sourceLineNo">146</span><a id="line.146">                                    for(int j = 0; j != t.getTriangleCount(); j++) {</a>
+<span class="sourceLineNo">147</span><a id="line.147">                                        if(resolve(t.getTriangle(j, triangle), position, hNormal, rPosition)) {</a>
+<span class="sourceLineNo">148</span><a id="line.148">                                            hNode = n;</a>
+<span class="sourceLineNo">149</span><a id="line.149">                                        }</a>
+<span class="sourceLineNo">150</span><a id="line.150">                                    }</a>
+<span class="sourceLineNo">151</span><a id="line.151">                                    return true;</a>
+<span class="sourceLineNo">152</span><a id="line.152">                                }</a>
+<span class="sourceLineNo">153</span><a id="line.153">                                return false;</a>
+<span class="sourceLineNo">154</span><a id="line.154">                            });</a>
+<span class="sourceLineNo">155</span><a id="line.155">                        } else {</a>
+<span class="sourceLineNo">156</span><a id="line.156">                            for(int j = 0; j != n.getTriangleCount(); j++) {</a>
+<span class="sourceLineNo">157</span><a id="line.157">                                if(resolve(n.getTriangle(scene, j, triangle), position, hNormal, rPosition)) {</a>
+<span class="sourceLineNo">158</span><a id="line.158">                                    hNode = n;</a>
+<span class="sourceLineNo">159</span><a id="line.159">                                }</a>
+<span class="sourceLineNo">160</span><a id="line.160">                            }</a>
+<span class="sourceLineNo">161</span><a id="line.161">                        }</a>
+<span class="sourceLineNo">162</span><a id="line.162">                    }</a>
+<span class="sourceLineNo">163</span><a id="line.163">                    return true;</a>
+<span class="sourceLineNo">164</span><a id="line.164">                }</a>
+<span class="sourceLineNo">165</span><a id="line.165">                return false;</a>
+<span class="sourceLineNo">166</span><a id="line.166">            });</a>
+<span class="sourceLineNo">167</span><a id="line.167">            if(hNode != null) {</a>
+<span class="sourceLineNo">168</span><a id="line.168">                if(Math.acos(Math.max(-0.999f, Math.min(0.999f, hNormal.dot(0, 1, 0)))) &lt; Math.toRadians(groundSlope)) {</a>
+<span class="sourceLineNo">169</span><a id="line.169">                    groundNormal.add(hNormal);</a>
+<span class="sourceLineNo">170</span><a id="line.170">                    onGround = true;</a>
+<span class="sourceLineNo">171</span><a id="line.171">                    velocity.y = 0;</a>
+<span class="sourceLineNo">172</span><a id="line.172">                }</a>
+<span class="sourceLineNo">173</span><a id="line.173">                if(Math.acos(Math.max(-0.999f, Math.min(0.999f, hNormal.dot(0, -1, 0)))) &lt; Math.toRadians(roofSlope)) {</a>
+<span class="sourceLineNo">174</span><a id="line.174">                    hitRoof = true;</a>
+<span class="sourceLineNo">175</span><a id="line.175">                    velocity.y = 0;</a>
+<span class="sourceLineNo">176</span><a id="line.176">                }</a>
+<span class="sourceLineNo">177</span><a id="line.177">                position.set(rPosition);</a>
+<span class="sourceLineNo">178</span><a id="line.178">                collided = true;</a>
+<span class="sourceLineNo">179</span><a id="line.179">                hitNodes.add(hNode);</a>
+<span class="sourceLineNo">180</span><a id="line.180">            } else {</a>
+<span class="sourceLineNo">181</span><a id="line.181">                break;</a>
+<span class="sourceLineNo">182</span><a id="line.182">            }</a>
+<span class="sourceLineNo">183</span><a id="line.183">        }</a>
+<span class="sourceLineNo">184</span><a id="line.184">        if(onGround) {</a>
+<span class="sourceLineNo">185</span><a id="line.185">            groundNormal.normalize(u);</a>
+<span class="sourceLineNo">186</span><a id="line.186">            r.set(1, 0, 0);</a>
+<span class="sourceLineNo">187</span><a id="line.187">            r.cross(u, f).normalize();</a>
+<span class="sourceLineNo">188</span><a id="line.188">            u.cross(f, r).normalize();</a>
+<span class="sourceLineNo">189</span><a id="line.189">            groundMatrix.set(</a>
+<span class="sourceLineNo">190</span><a id="line.190">                r.x, u.x, f.x, 0,</a>
+<span class="sourceLineNo">191</span><a id="line.191">                r.y, u.y, f.y, 0,</a>
+<span class="sourceLineNo">192</span><a id="line.192">                r.z, u.z, f.z, 0,</a>
+<span class="sourceLineNo">193</span><a id="line.193">                0, 0, 0, 1</a>
+<span class="sourceLineNo">194</span><a id="line.194">            );</a>
+<span class="sourceLineNo">195</span><a id="line.195">        }</a>
+<span class="sourceLineNo">196</span><a id="line.196">        return collided;</a>
+<span class="sourceLineNo">197</span><a id="line.197">    }</a>
+<span class="sourceLineNo">198</span><a id="line.198"></a>
+<span class="sourceLineNo">199</span><a id="line.199">    private boolean resolve(Triangle triangle, Vec3 position, Vec3 hNormal, Vec3 rPosition) {</a>
+<span class="sourceLineNo">200</span><a id="line.200">        float t = time[0];</a>
+<span class="sourceLineNo">201</span><a id="line.201"></a>
+<span class="sourceLineNo">202</span><a id="line.202">        triangle.n.negate(d);</a>
+<span class="sourceLineNo">203</span><a id="line.203">        o.set(position);</a>
+<span class="sourceLineNo">204</span><a id="line.204">        if(triangle.intersectsPlane(o, d, time)) {</a>
+<span class="sourceLineNo">205</span><a id="line.205">            p.set(d).scale(time[0]);</a>
+<span class="sourceLineNo">206</span><a id="line.206">            o.add(p, p);</a>
+<span class="sourceLineNo">207</span><a id="line.207">            if(triangle.contains(p, 0)) {</a>
+<span class="sourceLineNo">208</span><a id="line.208">                hNormal.set(triangle.n);</a>
+<span class="sourceLineNo">209</span><a id="line.209">                hTriangle.set(triangle);</a>
+<span class="sourceLineNo">210</span><a id="line.210">                p.add(rPosition.set(hNormal).scale(radius), rPosition);</a>
+<span class="sourceLineNo">211</span><a id="line.211">                return true;</a>
+<span class="sourceLineNo">212</span><a id="line.212">            } else {</a>
+<span class="sourceLineNo">213</span><a id="line.213">                time[0] = t;</a>
+<span class="sourceLineNo">214</span><a id="line.214">                triangle.closestPoint(o, c);</a>
+<span class="sourceLineNo">215</span><a id="line.215">                o.sub(c, d);</a>
+<span class="sourceLineNo">216</span><a id="line.216">                if(d.length() &gt; 0.0000001 &amp;&amp; d.length() &lt; time[0]) {</a>
+<span class="sourceLineNo">217</span><a id="line.217">                    time[0] = d.length();</a>
+<span class="sourceLineNo">218</span><a id="line.218">                    d.normalize(hNormal);</a>
+<span class="sourceLineNo">219</span><a id="line.219">                    hTriangle.set(triangle);</a>
+<span class="sourceLineNo">220</span><a id="line.220">                    c.add(rPosition.set(hNormal).scale(radius), rPosition);</a>
+<span class="sourceLineNo">221</span><a id="line.221">                    return true;</a>
+<span class="sourceLineNo">222</span><a id="line.222">                }</a>
+<span class="sourceLineNo">223</span><a id="line.223">            }</a>
+<span class="sourceLineNo">224</span><a id="line.224">        }</a>
+<span class="sourceLineNo">225</span><a id="line.225">        tested++;</a>
+<span class="sourceLineNo">226</span><a id="line.226"></a>
+<span class="sourceLineNo">227</span><a id="line.227">        return false;</a>
+<span class="sourceLineNo">228</span><a id="line.228">    }</a>
+<span class="sourceLineNo">229</span><a id="line.229">}</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</main>
+</body>
+</html>

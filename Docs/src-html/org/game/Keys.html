@@ -1,0 +1,211 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css" title="Style">
+</head>
+<body>
+<main role="main">
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span><a id="line.1">package org.game;</a>
+<span class="sourceLineNo">002</span><a id="line.2"></a>
+<span class="sourceLineNo">003</span><a id="line.3">import org.lwjgl.input.Keyboard;</a>
+<span class="sourceLineNo">004</span><a id="line.4"></a>
+<span class="sourceLineNo">005</span><a id="line.5">public class Keys {</a>
+<span class="sourceLineNo">006</span><a id="line.6">        public static final int KEY_NONE = Keyboard.KEY_NONE;</a>
+<span class="sourceLineNo">007</span><a id="line.7">        public static final int KEY_ESCAPE = Keyboard.KEY_ESCAPE;</a>
+<span class="sourceLineNo">008</span><a id="line.8">        public static final int KEY_1 = Keyboard.KEY_1;</a>
+<span class="sourceLineNo">009</span><a id="line.9">        public static final int KEY_2 = Keyboard.KEY_2;</a>
+<span class="sourceLineNo">010</span><a id="line.10">        public static final int KEY_3 = Keyboard.KEY_3;</a>
+<span class="sourceLineNo">011</span><a id="line.11">        public static final int KEY_4 = Keyboard.KEY_4;</a>
+<span class="sourceLineNo">012</span><a id="line.12">        public static final int KEY_5 = Keyboard.KEY_5;</a>
+<span class="sourceLineNo">013</span><a id="line.13">        public static final int KEY_6 = Keyboard.KEY_6;</a>
+<span class="sourceLineNo">014</span><a id="line.14">        public static final int KEY_7 = Keyboard.KEY_7;</a>
+<span class="sourceLineNo">015</span><a id="line.15">        public static final int KEY_8 = Keyboard.KEY_8;</a>
+<span class="sourceLineNo">016</span><a id="line.16">        public static final int KEY_9 = Keyboard.KEY_9;</a>
+<span class="sourceLineNo">017</span><a id="line.17">        public static final int KEY_0 = Keyboard.KEY_0;</a>
+<span class="sourceLineNo">018</span><a id="line.18">        public static final int KEY_MINUS = Keyboard.KEY_MINUS;</a>
+<span class="sourceLineNo">019</span><a id="line.19">        public static final int KEY_EQUALS = Keyboard.KEY_EQUALS;</a>
+<span class="sourceLineNo">020</span><a id="line.20">        public static final int KEY_BACK = Keyboard.KEY_BACK;</a>
+<span class="sourceLineNo">021</span><a id="line.21">        public static final int KEY_TAB = Keyboard.KEY_TAB;</a>
+<span class="sourceLineNo">022</span><a id="line.22">        public static final int KEY_Q = Keyboard.KEY_Q;</a>
+<span class="sourceLineNo">023</span><a id="line.23">        public static final int KEY_W = Keyboard.KEY_W;</a>
+<span class="sourceLineNo">024</span><a id="line.24">        public static final int KEY_E = Keyboard.KEY_E;</a>
+<span class="sourceLineNo">025</span><a id="line.25">        public static final int KEY_R = Keyboard.KEY_R;</a>
+<span class="sourceLineNo">026</span><a id="line.26">        public static final int KEY_T = Keyboard.KEY_T;</a>
+<span class="sourceLineNo">027</span><a id="line.27">        public static final int KEY_Y = Keyboard.KEY_Y;</a>
+<span class="sourceLineNo">028</span><a id="line.28">        public static final int KEY_U = Keyboard.KEY_U;</a>
+<span class="sourceLineNo">029</span><a id="line.29">        public static final int KEY_I = Keyboard.KEY_I;</a>
+<span class="sourceLineNo">030</span><a id="line.30">        public static final int KEY_O = Keyboard.KEY_O;</a>
+<span class="sourceLineNo">031</span><a id="line.31">        public static final int KEY_P = Keyboard.KEY_P;</a>
+<span class="sourceLineNo">032</span><a id="line.32">        public static final int KEY_LBRACKET = Keyboard.KEY_LBRACKET;</a>
+<span class="sourceLineNo">033</span><a id="line.33">        public static final int KEY_RBRACKET = Keyboard.KEY_RBRACKET;</a>
+<span class="sourceLineNo">034</span><a id="line.34">        public static final int KEY_RETURN = Keyboard.KEY_RETURN;</a>
+<span class="sourceLineNo">035</span><a id="line.35">        public static final int KEY_LCONTROL = Keyboard.KEY_LCONTROL;</a>
+<span class="sourceLineNo">036</span><a id="line.36">        public static final int KEY_A = Keyboard.KEY_A;</a>
+<span class="sourceLineNo">037</span><a id="line.37">        public static final int KEY_S = Keyboard.KEY_S;</a>
+<span class="sourceLineNo">038</span><a id="line.38">        public static final int KEY_D = Keyboard.KEY_D;</a>
+<span class="sourceLineNo">039</span><a id="line.39">        public static final int KEY_F = Keyboard.KEY_F;</a>
+<span class="sourceLineNo">040</span><a id="line.40">        public static final int KEY_G = Keyboard.KEY_G;</a>
+<span class="sourceLineNo">041</span><a id="line.41">        public static final int KEY_H = Keyboard.KEY_H;</a>
+<span class="sourceLineNo">042</span><a id="line.42">        public static final int KEY_J = Keyboard.KEY_J;</a>
+<span class="sourceLineNo">043</span><a id="line.43">        public static final int KEY_K = Keyboard.KEY_K;</a>
+<span class="sourceLineNo">044</span><a id="line.44">        public static final int KEY_L = Keyboard.KEY_L;</a>
+<span class="sourceLineNo">045</span><a id="line.45">        public static final int KEY_SEMICOLON = Keyboard.KEY_SEMICOLON;</a>
+<span class="sourceLineNo">046</span><a id="line.46">        public static final int KEY_APOSTROPHE = Keyboard.KEY_APOSTROPHE;</a>
+<span class="sourceLineNo">047</span><a id="line.47">        public static final int KEY_GRAVE = Keyboard.KEY_GRAVE;</a>
+<span class="sourceLineNo">048</span><a id="line.48">        public static final int KEY_LSHIFT = Keyboard.KEY_LSHIFT;</a>
+<span class="sourceLineNo">049</span><a id="line.49">        public static final int KEY_BACKSLASH = Keyboard.KEY_BACKSLASH;</a>
+<span class="sourceLineNo">050</span><a id="line.50">        public static final int KEY_Z = Keyboard.KEY_Z;</a>
+<span class="sourceLineNo">051</span><a id="line.51">        public static final int KEY_X = Keyboard.KEY_X;</a>
+<span class="sourceLineNo">052</span><a id="line.52">        public static final int KEY_C = Keyboard.KEY_C;</a>
+<span class="sourceLineNo">053</span><a id="line.53">        public static final int KEY_V = Keyboard.KEY_V;</a>
+<span class="sourceLineNo">054</span><a id="line.54">        public static final int KEY_B = Keyboard.KEY_B;</a>
+<span class="sourceLineNo">055</span><a id="line.55">        public static final int KEY_N = Keyboard.KEY_N;</a>
+<span class="sourceLineNo">056</span><a id="line.56">        public static final int KEY_M = Keyboard.KEY_M;</a>
+<span class="sourceLineNo">057</span><a id="line.57">        public static final int KEY_COMMA = Keyboard.KEY_COMMA;</a>
+<span class="sourceLineNo">058</span><a id="line.58">        public static final int KEY_PERIOD = Keyboard.KEY_PERIOD;</a>
+<span class="sourceLineNo">059</span><a id="line.59">        public static final int KEY_SLASH = Keyboard.KEY_SLASH;</a>
+<span class="sourceLineNo">060</span><a id="line.60">        public static final int KEY_RSHIFT = Keyboard.KEY_RSHIFT;</a>
+<span class="sourceLineNo">061</span><a id="line.61">        public static final int KEY_MULTIPLY = Keyboard.KEY_MULTIPLY;</a>
+<span class="sourceLineNo">062</span><a id="line.62">        public static final int KEY_LMENU = Keyboard.KEY_LMENU;</a>
+<span class="sourceLineNo">063</span><a id="line.63">        public static final int KEY_SPACE = Keyboard.KEY_SPACE;</a>
+<span class="sourceLineNo">064</span><a id="line.64">        public static final int KEY_CAPITAL = Keyboard.KEY_CAPITAL;</a>
+<span class="sourceLineNo">065</span><a id="line.65">        public static final int KEY_F1 = Keyboard.KEY_F1;</a>
+<span class="sourceLineNo">066</span><a id="line.66">        public static final int KEY_F2 = Keyboard.KEY_F2;</a>
+<span class="sourceLineNo">067</span><a id="line.67">        public static final int KEY_F3 = Keyboard.KEY_F3;</a>
+<span class="sourceLineNo">068</span><a id="line.68">        public static final int KEY_F4 = Keyboard.KEY_F4;</a>
+<span class="sourceLineNo">069</span><a id="line.69">        public static final int KEY_F5 = Keyboard.KEY_F5;</a>
+<span class="sourceLineNo">070</span><a id="line.70">        public static final int KEY_F6 = Keyboard.KEY_F6;</a>
+<span class="sourceLineNo">071</span><a id="line.71">        public static final int KEY_F7 = Keyboard.KEY_F7;</a>
+<span class="sourceLineNo">072</span><a id="line.72">        public static final int KEY_F8 = Keyboard.KEY_F8;</a>
+<span class="sourceLineNo">073</span><a id="line.73">        public static final int KEY_F9 = Keyboard.KEY_F9;</a>
+<span class="sourceLineNo">074</span><a id="line.74">        public static final int KEY_F10 = Keyboard.KEY_F10;</a>
+<span class="sourceLineNo">075</span><a id="line.75">        public static final int KEY_NUMLOCK = Keyboard.KEY_NUMLOCK;</a>
+<span class="sourceLineNo">076</span><a id="line.76">        public static final int KEY_SCROLL = Keyboard.KEY_SCROLL;</a>
+<span class="sourceLineNo">077</span><a id="line.77">        public static final int KEY_NUMPAD7 = Keyboard.KEY_NUMPAD7;</a>
+<span class="sourceLineNo">078</span><a id="line.78">        public static final int KEY_NUMPAD8 = Keyboard.KEY_NUMPAD8;</a>
+<span class="sourceLineNo">079</span><a id="line.79">        public static final int KEY_NUMPAD9 = Keyboard.KEY_NUMPAD9;</a>
+<span class="sourceLineNo">080</span><a id="line.80">        public static final int KEY_SUBTRACT = Keyboard.KEY_SUBTRACT;</a>
+<span class="sourceLineNo">081</span><a id="line.81">        public static final int KEY_NUMPAD4 = Keyboard.KEY_NUMPAD4;</a>
+<span class="sourceLineNo">082</span><a id="line.82">        public static final int KEY_NUMPAD5 = Keyboard.KEY_NUMPAD5;</a>
+<span class="sourceLineNo">083</span><a id="line.83">        public static final int KEY_NUMPAD6 = Keyboard.KEY_NUMPAD6;</a>
+<span class="sourceLineNo">084</span><a id="line.84">        public static final int KEY_ADD = Keyboard.KEY_ADD;</a>
+<span class="sourceLineNo">085</span><a id="line.85">        public static final int KEY_NUMPAD1 = Keyboard.KEY_NUMPAD1;</a>
+<span class="sourceLineNo">086</span><a id="line.86">        public static final int KEY_NUMPAD2 = Keyboard.KEY_NUMPAD2;</a>
+<span class="sourceLineNo">087</span><a id="line.87">        public static final int KEY_NUMPAD3 = Keyboard.KEY_NUMPAD3;</a>
+<span class="sourceLineNo">088</span><a id="line.88">        public static final int KEY_NUMPAD0 = Keyboard.KEY_NUMPAD0;</a>
+<span class="sourceLineNo">089</span><a id="line.89">        public static final int KEY_DECIMAL = Keyboard.KEY_DECIMAL;</a>
+<span class="sourceLineNo">090</span><a id="line.90">        public static final int KEY_F11 = Keyboard.KEY_F11;</a>
+<span class="sourceLineNo">091</span><a id="line.91">        public static final int KEY_F12 = Keyboard.KEY_F12;</a>
+<span class="sourceLineNo">092</span><a id="line.92">        public static final int KEY_F13 = Keyboard.KEY_F13;</a>
+<span class="sourceLineNo">093</span><a id="line.93">        public static final int KEY_F14 = Keyboard.KEY_F14;</a>
+<span class="sourceLineNo">094</span><a id="line.94">        public static final int KEY_F15 = Keyboard.KEY_F15;</a>
+<span class="sourceLineNo">095</span><a id="line.95">        public static final int KEY_F16 = Keyboard.KEY_F16;</a>
+<span class="sourceLineNo">096</span><a id="line.96">        public static final int KEY_F17 = Keyboard.KEY_F17;</a>
+<span class="sourceLineNo">097</span><a id="line.97">        public static final int KEY_F18 = Keyboard.KEY_F18;</a>
+<span class="sourceLineNo">098</span><a id="line.98">        public static final int KEY_KANA = Keyboard.KEY_KANA;</a>
+<span class="sourceLineNo">099</span><a id="line.99">        public static final int KEY_F19 = Keyboard.KEY_F19;</a>
+<span class="sourceLineNo">100</span><a id="line.100">        public static final int KEY_CONVERT = Keyboard.KEY_CONVERT;</a>
+<span class="sourceLineNo">101</span><a id="line.101">        public static final int KEY_NOCONVERT = Keyboard.KEY_NOCONVERT;</a>
+<span class="sourceLineNo">102</span><a id="line.102">        public static final int KEY_YEN = Keyboard.KEY_YEN;</a>
+<span class="sourceLineNo">103</span><a id="line.103">        public static final int KEY_NUMPADEQUALS = Keyboard.KEY_NUMPADEQUALS;</a>
+<span class="sourceLineNo">104</span><a id="line.104">        public static final int KEY_CIRCUMFLEX = Keyboard.KEY_CIRCUMFLEX;</a>
+<span class="sourceLineNo">105</span><a id="line.105">        public static final int KEY_AT = Keyboard.KEY_AT;</a>
+<span class="sourceLineNo">106</span><a id="line.106">        public static final int KEY_COLON = Keyboard.KEY_COLON;</a>
+<span class="sourceLineNo">107</span><a id="line.107">        public static final int KEY_UNDERLINE = Keyboard.KEY_UNDERLINE;</a>
+<span class="sourceLineNo">108</span><a id="line.108">        public static final int KEY_KANJI = Keyboard.KEY_KANJI;</a>
+<span class="sourceLineNo">109</span><a id="line.109">        public static final int KEY_STOP = Keyboard.KEY_STOP;</a>
+<span class="sourceLineNo">110</span><a id="line.110">        public static final int KEY_AX = Keyboard.KEY_AX;</a>
+<span class="sourceLineNo">111</span><a id="line.111">        public static final int KEY_UNLABELED = Keyboard.KEY_UNLABELED;</a>
+<span class="sourceLineNo">112</span><a id="line.112">        public static final int KEY_NUMPADENTER = Keyboard.KEY_NUMPADENTER;</a>
+<span class="sourceLineNo">113</span><a id="line.113">        public static final int KEY_RCONTROL = Keyboard.KEY_RCONTROL;</a>
+<span class="sourceLineNo">114</span><a id="line.114">        public static final int KEY_SECTION = Keyboard.KEY_SECTION;</a>
+<span class="sourceLineNo">115</span><a id="line.115">        public static final int KEY_NUMPADCOMMA = Keyboard.KEY_NUMPADCOMMA;</a>
+<span class="sourceLineNo">116</span><a id="line.116">        public static final int KEY_DIVIDE = Keyboard.KEY_DIVIDE;</a>
+<span class="sourceLineNo">117</span><a id="line.117">        public static final int KEY_SYSRQ = Keyboard.KEY_SYSRQ;</a>
+<span class="sourceLineNo">118</span><a id="line.118">        public static final int KEY_RMENU = Keyboard.KEY_RMENU;</a>
+<span class="sourceLineNo">119</span><a id="line.119">        public static final int KEY_FUNCTION = Keyboard.KEY_FUNCTION;</a>
+<span class="sourceLineNo">120</span><a id="line.120">        public static final int KEY_PAUSE = Keyboard.KEY_PAUSE;</a>
+<span class="sourceLineNo">121</span><a id="line.121">        public static final int KEY_HOME = Keyboard.KEY_HOME;</a>
+<span class="sourceLineNo">122</span><a id="line.122">        public static final int KEY_UP = Keyboard.KEY_UP;</a>
+<span class="sourceLineNo">123</span><a id="line.123">        public static final int KEY_PRIOR = Keyboard.KEY_PRIOR;</a>
+<span class="sourceLineNo">124</span><a id="line.124">        public static final int KEY_LEFT = Keyboard.KEY_LEFT;</a>
+<span class="sourceLineNo">125</span><a id="line.125">        public static final int KEY_RIGHT = Keyboard.KEY_RIGHT;</a>
+<span class="sourceLineNo">126</span><a id="line.126">        public static final int KEY_END = Keyboard.KEY_END;</a>
+<span class="sourceLineNo">127</span><a id="line.127">        public static final int KEY_DOWN = Keyboard.KEY_DOWN;</a>
+<span class="sourceLineNo">128</span><a id="line.128">        public static final int KEY_NEXT = Keyboard.KEY_NEXT;</a>
+<span class="sourceLineNo">129</span><a id="line.129">        public static final int KEY_INSERT = Keyboard.KEY_INSERT;</a>
+<span class="sourceLineNo">130</span><a id="line.130">        public static final int KEY_DELETE = Keyboard.KEY_DELETE;</a>
+<span class="sourceLineNo">131</span><a id="line.131">        public static final int KEY_CLEAR = Keyboard.KEY_CLEAR;</a>
+<span class="sourceLineNo">132</span><a id="line.132">        public static final int KEY_LMETA = Keyboard.KEY_LMETA;</a>
+<span class="sourceLineNo">133</span><a id="line.133">        public static final int KEY_RMETA = Keyboard.KEY_RMETA;</a>
+<span class="sourceLineNo">134</span><a id="line.134">        public static final int KEY_APPS = Keyboard.KEY_APPS;</a>
+<span class="sourceLineNo">135</span><a id="line.135">        public static final int KEY_POWER = Keyboard.KEY_POWER;</a>
+<span class="sourceLineNo">136</span><a id="line.136">        public static final int KEY_SLEEP = Keyboard.KEY_SLEEP;</a>
+<span class="sourceLineNo">137</span><a id="line.137">}</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</main>
+</body>
+</html>

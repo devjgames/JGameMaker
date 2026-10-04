@@ -1,2 +1,5 @@
 # JGameMaker
-Game making program written in java
+A game making tool built with java
+
+![shot 1](screenShots/JGameMaker1.png)
+
